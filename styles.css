@@ -1,0 +1,256 @@
+:root {
+  --verde-oscuro: #1c3a1c;
+  --verde: #2d5a27;
+  --verde-claro: #7bc043;
+  --crema: #f8f4e3;
+  --gris-batalla: #dfe6d5;
+  --amarillo: #ffd34e;
+  --rojo: #e5484d;
+  --morado: #8b5cf6;
+  --azul-agua: #4a90d9;
+  --borde: 4px solid #2b2b2b;
+  font-size: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Courier New", ui-monospace, monospace;
+  background: repeating-linear-gradient(45deg, #1a2f1a, #1a2f1a 24px, #16281a 24px, #16281a 48px);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #222;
+  padding: 12px;
+}
+
+#juego {
+  width: min(720px, 100%);
+  background: var(--crema);
+  border: var(--borde);
+  border-radius: 14px;
+  box-shadow: 0 0 0 4px var(--verde-claro), 8px 10px 0 rgba(0,0,0,.45);
+  overflow: hidden;
+}
+
+.pantalla { display: none; padding: 28px 22px; min-height: 520px; }
+.pantalla.activa { display: block; animation: aparecer .35s ease; }
+
+@keyframes aparecer { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+
+h1.logo {
+  text-align: center;
+  font-size: clamp(2.6rem, 9vw, 4rem);
+  letter-spacing: 4px;
+  color: var(--verde-oscuro);
+  text-shadow: 3px 3px 0 var(--amarillo);
+  margin-top: 24px;
+}
+h1.logo span { color: var(--rojo); text-shadow: 3px 3px 0 #fff; }
+
+.subtitulo { text-align: center; margin: 14px 0 20px; color: #555; font-weight: bold; }
+
+.fila-sprites { display: flex; justify-content: center; gap: 18px; margin-bottom: 28px; }
+.sprite-mini { width: 96px; height: 96px; }
+.sprite-mini svg { width: 100%; height: 100%; }
+.sprite-mini.grande { width: 150px; height: 150px; margin: 0 auto; animation: flotar 2s ease-in-out infinite; }
+
+.nota { text-align: center; color: #999; font-size: .8rem; margin-top: 24px; }
+
+.btn-grande {
+  display: block;
+  margin: 0 auto;
+  font-family: inherit;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 14px 34px;
+  border: var(--borde);
+  border-radius: 10px;
+  background: var(--amarillo);
+  color: #222;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #b8912a;
+  transition: transform .08s, box-shadow .08s;
+  letter-spacing: 1px;
+}
+.btn-grande:hover { transform: translateY(2px); box-shadow: 0 3px 0 #b8912a; }
+.btn-grande:active { transform: translateY(5px); box-shadow: none; }
+.btn-grande.secundario { background: var(--crema); box-shadow: 0 5px 0 #b9b39a; }
+.btn-grande.secundario:hover { box-shadow: 0 3px 0 #b9b39a; }
+
+#pantalla-elegir h2, #pantalla-final h2 { text-align: center; color: var(--verde-oscuro); margin-bottom: 18px; }
+
+.tarjetas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+.tarjeta {
+  width: 200px;
+  background: #fff;
+  border: var(--borde);
+  border-radius: 12px;
+  padding: 14px 12px 0;
+  cursor: pointer;
+  text-align: center;
+  transition: transform .12s, box-shadow .12s;
+  box-shadow: 0 4px 0 rgba(0,0,0,.18);
+}
+.tarjeta:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 10px 0 rgba(0,0,0,.18); }
+.tarjeta .sprite-mini { margin: 0 auto; animation: flotar 2.4s ease-in-out infinite; }
+.tarjeta .sprite-mini:nth-child(2) { animation-delay: .4s; }
+
+.nombre-m { font-size: 1.05rem; font-weight: bold; color: var(--verde-oscuro); margin-top: 6px; }
+.tipo-m {
+  display: inline-block;
+  font-size: .7rem;
+  font-weight: bold;
+  color: #fff;
+  padding: 2px 10px;
+  border-radius: 20px;
+  margin: 6px 0 4px;
+  border: 2px solid #222;
+}
+.tipo-volador { background: var(--azul-agua); }
+.tipo-planta { background: var(--verde-claro); color: #1c3a1c; }
+.tipo-metal { background: #9aa2ad; color: #222; }
+.descripcion-m { font-size: .74rem; color: #666; line-height: 1.35; min-height: 52px; padding-bottom: 4px; }
+.stats-m { border-top: 2px dashed #ccc; padding: 8px 0; text-align: left; }
+.stats-m p { font-size: .7rem; margin: 3px 0; display: flex; justify-content: space-between; color: #444; }
+.stats-m p strong { width: 34px; }
+.mini-barra { flex: 1; height: 8px; background: #e6e2d2; border: 1px solid #999; border-radius: 6px; margin-left: 8px; overflow: hidden; }
+.mini-barra i { display: block; height: 100%; background: var(--verde-claro); }
+.eliminar-txt { font-size: .7rem; color: #999; padding: 6px 0 10px; display: none; }
+
+.arena {
+  position: relative;
+  background: linear-gradient(180deg, var(--gris-batalla) 0 62%, #cdd8ba 62% 100%);
+  border: var(--borde);
+  border-radius: 12px;
+  height: 320px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.lado.rival { position: absolute; top: 18px; left: 24px; width: 230px; }
+.lado.jugador { position: absolute; bottom: 10px; right: 20px; width: 260px; }
+
+.estado {
+  background: #fff;
+  border: 3px solid #2b2b2b;
+  border-radius: 10px;
+  padding: 8px 10px;
+  position: relative;
+  z-index: 5;
+  box-shadow: 0 3px 0 rgba(0,0,0,.2);
+}
+.platforma { display: flex; align-items: flex-end; justify-content: flex-end; height: 178px; }
+.lado.rival .platforma { justify-content: flex-end; padding-right: 10px; }
+.lado.jugador .platforma { justify-content: flex-start; padding-left: 6px; }
+.sombra { width: 96px; height: 14px; background: rgba(0,0,0,.18); border-radius: 50%; margin: 2px auto 0; }
+.sombra-rival { margin-right: 40px; }
+.sombra-jugador { margin-left: 26px; }
+.estado-rival .nombre-linea, .estado-jugador .nombre-linea { display: flex; justify-content: space-between; align-items: center; }
+.estado strong { font-size: .95rem; }
+.nivel { font-size: .7rem; color: #777; }
+
+.barra-hp { height: 12px; background: #e6e2d2; border: 2px solid #222; border-radius: 8px; margin-top: 6px; overflow: hidden; }
+.relleno-hp { height: 100%; width: 100%; background: linear-gradient(180deg, var(--verde-claro), #4e9a2f); transition: width .5s ease; }
+.relleno-hp.medio { background: linear-gradient(180deg, #ffd34e, #e0a800); }
+.relleno-hp.bajo { background: linear-gradient(180deg, #f5655b, #c0392b); }
+
+.hp-numeros { font-size: .7rem; text-align: right; color: #555; margin-top: 2px; }
+.estado-extra { font-size: .7rem; min-height: 16px; }
+.estado-extra .chip { display: inline-block; padding: 0 8px; border-radius: 10px; border: 1.5px solid #222; margin-right: 4px; font-weight: bold; }
+.estado-extra .chip.veneno { background: #c9a0dc; }
+.estado-extra .chip.ataque { background: var(--morado); color: #fff; }
+.estado-extra .chip.defensa { background: #7fd1e8; }
+
+.sprite-batalla { width: 170px; height: 170px; transition: transform .15s; }
+.sprite-batalla svg { width: 100%; height: 100%; }
+.jugador-sprite { transform: scaleX(-1); }
+
+@keyframes flotar { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.estado-rival ~ .platforma .sprite-batalla,
+.rival-sprite { animation: flotar 2.8s ease-in-out infinite; }
+.jugador-sprite { animation: flotar 2.4s ease-in-out infinite; }
+
+.golpeado { animation: sacudir .32s ease; }
+.rival-sprite.golpeado { animation: sacudir .32s ease; }
+.jugador-sprite.golpeado { animation: sacudirJugador .32s ease; }
+@keyframes sacudir { 0%,100% { transform: translate(0); } 25% { transform: translate(-9px, 3px); } 50% { transform: translate(8px, -3px); } 75% { transform: translate(-5px, 2px); } }
+@keyframes sacudirJugador { 0%,100% { transform: scaleX(-1) translate(0); } 25% { transform: scaleX(-1) translate(-9px, 3px); } 50% { transform: scaleX(-1) translate(8px, -3px); } 75% { transform: scaleX(-1) translate(-5px, 2px); } }
+
+.desmayado { animation: caer .6s forwards ease-in; }
+.jugador-sprite.desmayado { animation: caerJugador .6s forwards ease-in; }
+@keyframes caer { to { transform: translateY(120px) rotate(90deg); opacity: 0; } }
+@keyframes caerJugador { to { transform: scaleX(-1) translateY(120px) rotate(-90deg); opacity: 0; } }
+
+.dano-flotante {
+  position: absolute;
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: var(--rojo);
+  text-shadow: 2px 2px 0 #fff;
+  z-index: 9;
+  animation: subirDano .9s forwards ease-out;
+  pointer-events: none;
+}
+.dano-flotante.curacion { color: #3fa34d; }
+@keyframes subirDano { from { opacity: 1; } to { transform: translateY(-46px); opacity: 0; } }
+
+.caja-inferior { display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; }
+
+.caja-x2, .menu-ataques {
+  border: var(--borde);
+  border-radius: 10px;
+  background: #fff;
+  min-height: 175px;
+  padding: 10px;
+}
+
+.log { font-size: .82rem; line-height: 1.5; max-height: 155px; overflow-y: auto; }
+.log p { margin-bottom: 4px; padding-left: 8px; border-left: 4px solid var(--verde-claro); }
+.log p.destacado { border-left-color: var(--rojo); font-weight: bold; }
+.log p.curacion { border-left-color: #3fa34d; }
+
+.menu-ataques { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-content: stretch; }
+.btn-ataque {
+  font-family: inherit;
+  font-size: .74rem;
+  font-weight: bold;
+  border: 2.5px solid #2b2b2b;
+  border-radius: 8px;
+  padding: 8px 6px;
+  cursor: pointer;
+  color: #fff;
+  text-shadow: 1px 1px 0 rgba(0,0,0,.4);
+  box-shadow: 0 3px 0 rgba(0,0,0,.3);
+  transition: transform .08s;
+  line-height: 1.3;
+}
+.btn-ataque small { display: block; font-weight: normal; font-size: .64rem; opacity: .9; }
+.btn-ataque:hover:not(:disabled) { transform: translateY(2px) scale(.98); }
+.btn-ataque:disabled { opacity: .45; cursor: not-allowed; }
+
+.atk-normal { background: linear-gradient(180deg, #6f8f5a, #4e6b3c); }
+.atk-fuego { background: linear-gradient(180deg, #f5655b, #c0392b); }
+.atk-agua { background: linear-gradient(180deg, #5aa7d9, #35709e); }
+.atk-planta { background: linear-gradient(180deg, #7bc043, #4e9a2f); }
+.atk-fantasma { background: linear-gradient(180deg, #9b6ff0, #6d3fc4); }
+.atk-electrico { background: linear-gradient(180deg, #ffd34e, #d9a406); color: #222; text-shadow: none; }
+.atk-secreto { background: linear-gradient(135deg, #333 0 40%, var(--rojo) 40% 60%, #333 60% 100%); }
+
+.bloqueado { filter: grayscale(.6) brightness(.8); }
+
+#pantalla-final { text-align: center; padding-top: 60px; }
+.frase-final { max-width: 420px; margin: 16px auto 26px; color: #555; font-size: .95rem; line-height: 1.5; }
+.botones-final { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+@media (max-width: 640px) {
+  .pantalla { padding: 18px 12px; }
+  .arena { height: 430px; }
+  .lado.rival { left: 10px; width: calc(100% - 24px); }
+  .lado.rival .platforma { justify-content: center; padding-right: 0; }
+  .lado.jugador { right: 8px; width: calc(100% - 24px); }
+  .lado.jugador .platforma { justify-content: center; padding-left: 0; }
+  .caja-inferior { grid-template-columns: 1fr; }
+}

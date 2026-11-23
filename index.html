@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokememes — ¡A pelear!</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
+</head>
+<body>
+  <div id="juego">
+
+    <section id="pantalla-titulo" class="pantalla activa">
+      <h1 class="logo">POKE<span>MEMES</span></h1>
+      <p class="subtitulo">¡Tres bichos, un solo ganador!</p>
+      <div class="fila-sprites">
+        <div class="sprite-mini" data-sprite="pigeon"></div>
+        <div class="sprite-mini" data-sprite="nopal"></div>
+        <div class="sprite-mini" data-sprite="machete"></div>
+      </div>
+      <button id="btn-jugar" class="btn-grande">▶ ¡A PELEAR!</button>
+      <p class="nota">Hecho con memes y cariño</p>
+    </section>
+
+    <section id="pantalla-elegir" class="pantalla">
+      <h2>¡Elige tu monstruo!</h2>
+      <div id="tarjetas" class="tarjetas"></div>
+    </section>
+
+    <section id="pantalla-batalla" class="pantalla">
+      <div class="arena">
+        <div class="lado rival">
+          <div class="estado estado-rival">
+            <div class="nombre-linea">
+              <strong id="rival-nombre"></strong>
+              <span id="rival-nivel" class="nivel">Nv. 5</span>
+            </div>
+            <div class="barra-hp"><div id="rival-hp" class="relleno-hp"></div></div>
+            <div class="estado-extra"><span id="rival-estados"></span></div>
+          </div>
+          <div class="platforma"><div id="rival-sprite" class="sprite-batalla rival-sprite"></div></div>
+          <div class="sombra sombra-rival"></div>
+        </div>
+        <div class="lado jugador">
+          <div class="estado estado-jugador">
+            <div class="nombre-linea">
+              <strong id="jugador-nombre"></strong>
+              <span id="jugador-nivel" class="nivel">Nv. 5</span>
+            </div>
+            <div class="barra-hp"><div id="jugador-hp" class="relleno-hp"></div></div>
+            <div class="hp-numeros" id="jugador-hp-num"></div>
+            <div class="estado-extra"><span id="jugador-estados"></span></div>
+          </div>
+          <div class="platforma"><div id="jugador-sprite" class="sprite-batalla jugador-sprite"></div></div>
+          <div class="sombra sombra-jugador"></div>
+        </div>
+      </div>
+
+      <div class="caja-inferior">
+        <div class="caja-x2">
+          <div id="log" class="log"><p>¡Empieza la batalla!</p></div>
+        </div>
+        <div id="menu-ataques" class="menu-ataques"></div>
+      </div>
+    </section>
+
+    <section id="pantalla-final" class="pantalla">
+      <h2 id="titulo-final"></h2>
+      <div class="sprite-mini grande" id="sprite-final"></div>
+      <p id="frase-final" class="frase-final"></p>
+      <div class="botones-final">
+        <button id="btn-revancha" class="btn-grande">🔁 Revancha</button>
+        <button id="btn-cambiar" class="btn-grande secundario">Cambiar monstruo</button>
+      </div>
+    </section>
+
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>
