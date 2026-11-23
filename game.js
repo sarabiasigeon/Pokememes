@@ -160,6 +160,27 @@ const pocoEfectivoMensaje = "¡No fue muy eficaz… estuvo chafa!";
 const $ = (sel) => document.querySelector(sel);
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
+function vibrar(patron) {
+  if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+    try { navigator.vibrate(patron); } catch (e) {}
+  }
+}
+
+function activarTactil() {
+  const sel = ".tarjeta, .btn-ataque, .btn-grande";
+  document.addEventListener("touchstart", (e) => {
+    const t = e.target.closest(sel);
+    if (t) t.classList.add("tocado");
+    vibrar(12);
+  }, { passive: true });
+  ["touchend", "touchcancel"].forEach((ev) => {
+    document.addEventListener(ev, (e) => {
+      const t = e.target.closest ? e.target.closest(sel) : null;
+      if (t) t.classList.remove("tocado");
+    }, { passive: true });
+  });
+}
+
 const estado = {
   jugador: null,
   rival: null,
@@ -259,12 +280,14 @@ function danoFlotante(ladoJugador, texto, curacion = false) {
 function sacudir(m, ladoJugador) {
   const sprite = ladoJugador ? $("#jugador-sprite") : $("#rival-sprite");
   sprite.classList.add("golpeado");
+  vibrar(45);
   setTimeout(() => sprite.classList.remove("golpeado"), 320);
 }
 
 function desmayar(m, ladoJugador) {
   const sprite = ladoJugador ? $("#jugador-sprite") : $("#rival-sprite");
   sprite.classList.add("desmayado");
+  vibrar([120, 80, 200]);
 }
 
 function pintarMenu() {
@@ -299,6 +322,7 @@ function calcularDano(atk, lanzador, receptor) {
 
 async function aplicarAtaque(lanzador, receptor, atk, lanzadorEsJugador) {
   log(`${lanzador.nombre} usa ${atk.nombre.toUpperCase()} y ${atk.texto}.`);
+  if (atk.especial) vibrar([60, 50, 140]);
   await sleep(650);
 
   if (atk.cura) {
@@ -326,6 +350,7 @@ async function aplicarAtaque(lanzador, receptor, atk, lanzadorEsJugador) {
       if (eficacia < 1) log(pocoEfectivoMensaje);
       if (atk.veneno && receptor.venenoTurnos === 0 && Math.random() < 0.4) {
         receptor.venenoTurnos = 3;
+        vibrar([80, 70, 80]);
         log(`¡${receptor.nombre} se infecta con la herrumbre! ¡Está VENENADO!`, "destacado");
       }
       if (eficacia === 1 && !critico) log(`Le bajó ${dano} PS a ${receptor.nombre}.`);
@@ -434,6 +459,7 @@ function finalizar(ganoJugador) {
   $("#frase-final").textContent = ganoJugador
     ? `${ganador.nombre} dice: "${ganador.fraseVictoria}"`
     : `${perdedor.nombre} dice: "${perdedor.fraseDerrota}"`;
+  vibrar(ganoJugador ? [60, 50, 60, 50, 180] : [200, 100, 300]);
   mostrarPantalla("final");
 }
 
@@ -489,3 +515,4 @@ $("#btn-cambiar").addEventListener("click", () => {
 
 document.addEventListener("DOMContentLoaded", pintarSelecciónMini);
 pintarSelecciónMini();
+activarTactil();

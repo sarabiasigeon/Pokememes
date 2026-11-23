@@ -14,6 +14,14 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+body, button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tocado { transform: scale(.95); filter: brightness(.85); }
+.btn-ataque.tocado { transform: scale(.92); }
+
 body {
   font-family: "Courier New", ui-monospace, monospace;
   background: repeating-linear-gradient(45deg, #1a2f1a, #1a2f1a 24px, #16281a 24px, #16281a 48px);
@@ -75,7 +83,7 @@ h1.logo span { color: var(--rojo); text-shadow: 3px 3px 0 #fff; }
   letter-spacing: 1px;
 }
 .btn-grande:hover { transform: translateY(2px); box-shadow: 0 3px 0 #b8912a; }
-.btn-grande:active { transform: translateY(5px); box-shadow: none; }
+.btn-grande:active { transform: translateY(5px); box-shadow: none; filter: brightness(.9); }
 .btn-grande.secundario { background: var(--crema); box-shadow: 0 5px 0 #b9b39a; }
 .btn-grande.secundario:hover { box-shadow: 0 3px 0 #b9b39a; }
 
@@ -95,6 +103,7 @@ h1.logo span { color: var(--rojo); text-shadow: 3px 3px 0 #fff; }
   box-shadow: 0 4px 0 rgba(0,0,0,.18);
 }
 .tarjeta:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 10px 0 rgba(0,0,0,.18); }
+.tarjeta:active { transform: translateY(2px) scale(.97); filter: brightness(.9); }
 .tarjeta .sprite-mini { margin: 0 auto; animation: flotar 2.4s ease-in-out infinite; }
 .tarjeta .sprite-mini:nth-child(2) { animation-delay: .4s; }
 
@@ -229,6 +238,7 @@ h1.logo span { color: var(--rojo); text-shadow: 3px 3px 0 #fff; }
 }
 .btn-ataque small { display: block; font-weight: normal; font-size: .64rem; opacity: .9; }
 .btn-ataque:hover:not(:disabled) { transform: translateY(2px) scale(.98); }
+.btn-ataque:active:not(:disabled) { transform: translateY(3px) scale(.94); filter: brightness(.85); }
 .btn-ataque:disabled { opacity: .45; cursor: not-allowed; }
 
 .atk-normal { background: linear-gradient(180deg, #6f8f5a, #4e6b3c); }
@@ -253,4 +263,19 @@ h1.logo span { color: var(--rojo); text-shadow: 3px 3px 0 #fff; }
   .lado.jugador { right: 8px; width: calc(100% - 24px); }
   .lado.jugador .platforma { justify-content: center; padding-left: 0; }
   .caja-inferior { grid-template-columns: 1fr; }
+
+  .tarjetas { flex-direction: column; align-items: center; }
+  .tarjeta { width: min(320px, 100%); }
+  .btn-grande { font-size: 1.35rem; padding: 16px 30px; }
+  .sprite-batalla { width: 140px; height: 140px; }
+  .platforma { height: 148px; }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .menu-ataques { grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; }
+  .btn-ataque { font-size: .9rem; padding: 14px 8px; min-height: 62px; }
+  .btn-ataque small { font-size: .74rem; }
+  #pantalla-final .btn-grande { padding: 18px 26px; }
+  .sprite-mini { width: 110px; height: 110px; }
+  .sprite-mini.grande { width: 170px; height: 170px; }
 }
