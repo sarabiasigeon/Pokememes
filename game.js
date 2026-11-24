@@ -180,6 +180,41 @@ const SPRITES = {
     <ellipse cx="37" cy="49" rx="4" ry="2.4" fill="#f7a1b5" opacity="0.7"/>
     <ellipse cx="65" cy="49" rx="4" ry="2.4" fill="#f7a1b5" opacity="0.7"/>
     <path d="M30 22 q4 -4 9 -2" fill="none" stroke="#e8dfc8" stroke-width="2.4" stroke-linecap="round"/>
+  </svg>`,
+
+  fantacaldo: `
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <g opacity="0.5" fill="none" stroke="#b8c9a8" stroke-width="2.6" stroke-linecap="round">
+      <path d="M30 20 q5 -8 0 -14"/>
+      <path d="M66 16 q-6 -6 -2 -12"/>
+      <path d="M48 14 q4 -6 0 -10"/>
+    </g>
+    <g opacity="0.4" fill="#b8c9a8">
+      <circle cx="14" cy="52" r="6"/>
+      <circle cx="86" cy="48" r="5"/>
+      <circle cx="10" cy="66" r="4"/>
+    </g>
+    <path d="M14 44 Q14 74 50 76 Q86 74 86 44 Z" fill="#e6f0da" stroke="#2b2b2b" stroke-width="2.5" opacity="0.9"/>
+    <ellipse cx="50" cy="44" rx="36" ry="10" fill="#d4a94a" stroke="#2b2b2b" stroke-width="2.5" opacity="0.85"/>
+    <g fill="#b98d2f" opacity="0.8">
+      <circle cx="26" cy="45" r="2.2"/>
+      <circle cx="74" cy="46" r="2"/>
+      <circle cx="36" cy="42.5" r="1.6"/>
+      <circle cx="68" cy="42" r="1.6"/>
+    </g>
+    <ellipse cx="60" cy="34" rx="16" ry="12" fill="#b5651d" stroke="#2b2b2b" stroke-width="2.5" transform="rotate(-24 60 34)"/>
+    <line x1="70" y1="24" x2="80" y2="12" stroke="#2b2b2b" stroke-width="7" stroke-linecap="round"/>
+    <line x1="70" y1="24" x2="80" y2="12" stroke="#f3efe4" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="82" cy="11" r="3.6" fill="#f3efe4" stroke="#2b2b2b" stroke-width="1.6"/>
+    <circle cx="78.5" cy="8.5" r="3.2" fill="#f3efe4" stroke="#2b2b2b" stroke-width="1.6"/>
+    <circle cx="55" cy="33" r="3" fill="#fff" stroke="#2b2b2b" stroke-width="1.4"/>
+    <circle cx="55.6" cy="33.6" r="1.5" fill="#111"/>
+    <circle cx="65" cy="30" r="3" fill="#fff" stroke="#2b2b2b" stroke-width="1.4"/>
+    <circle cx="65.6" cy="30.6" r="1.5" fill="#111"/>
+    <path d="M49 28 L57 30 M72 24 L65 27" stroke="#2b2b2b" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M54 40 Q60 46 66 39 Q63 44 60 43 Q57 45 54 40 Z" fill="#4a1259" stroke="#2b0b33" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M54 40 Q60 42 66 39" fill="none" stroke="#f8f4e3" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M18 44 Q50 38 82 44" fill="none" stroke="#8a741f" stroke-width="2" opacity="0.6"/>
   </svg>`
 };
 
@@ -316,6 +351,25 @@ const MONSTRUOS = {
       { nombre: "Yema Ardiente", potencia: 22, clase: "atk-fuego", tipo: "normal", texto: "eyecta yema hirviendo a presión" },
       { nombre: "MASCADA REGENERADORA", cura: 46, clase: "atk-secreto", tipo: "normal", texto: "se mete en la boca rival, se hace mascar contea y sale diputado y renovado", especial: true }
     ]
+  },
+  fantacaldo: {
+    id: "fantacaldo",
+    nombre: "Fantacaldo",
+    tipo: "fantasma",
+    hpMax: 105,
+    ataque: 20,
+    defensa: 14,
+    velocidad: 16,
+    claseCss: "tipo-fantasma",
+    descripcion: "Caldo de pollo que no se dejó enfriar. Su alma vive en la pata y si le tomas la temperatura, se te apaga el termómetro.",
+    fraseVictoria: "Chup-chup… (traducción: los vivos también se pueden comer)",
+    fraseDerrota: "Se le cargó la sopa… y quedó en simple agua de pollo 😱",
+    ataques: [
+      { nombre: "Pozolera Fantasmal", potencia: 21, clase: "atk-fantasma", tipo: "fantasma", texto: "suelta una oleada de caldo que atraviesa la cáscara" },
+      { nombre: "Mordisco del Ancestro", potencia: 23, clase: "atk-normal", tipo: "normal", texto: "la pata muerde por su propia cuenta y con resentimiento" },
+      { nombre: "Recalentadito", cura: 30, clase: "atk-electrico", tipo: "normal", texto: "se recalienta en el comal cósmico y vuelve más espeso" },
+      { nombre: "SOPA DEL MÁS ALLÁ", potencia: 47, clase: "atk-secreto", tipo: "fantasma", texto: "sirve un tazón del más allá que asusta hasta al muerto", especial: true }
+    ]
   }
 };
 
@@ -325,7 +379,8 @@ const EFECTIVIDAD = {
   metal: { fuerte: "volador", debil: "planta" },
   veneno: { fuerte: "planta", debil: "metal" },
   lucha: { fuerte: "metal", debil: "volador" },
-  agua: { fuerte: "metal", debil: "planta" }
+  agua: { fuerte: "metal", debil: "planta" },
+  fantasma: { fuerte: "normal", debil: "metal" }
 };
 
 const inicioEfectivoMensaje = {
@@ -334,7 +389,8 @@ const inicioEfectivoMensaje = {
   metal: "¡Cortan las alas como si nada! ¡Es superficaz!",
   veneno: "¡La mancha negra infesta al verde! ¡Es superficaz!",
   lucha: "¡El pie del 45 reventó el óxido! ¡Es superficaz!",
-  agua: "¡El chorrito oxidó el metal! ¡Es superficaz!"
+  agua: "¡El chorrito oxidó el metal! ¡Es superficaz!",
+  fantasma: "¡El caldo pose el alma! ¡Es superficaz!"
 };
 const pocoEfectivoMensaje = "¡No fue muy eficaz… estuvo chafa!";
 

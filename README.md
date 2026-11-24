@@ -1,4 +1,4 @@
-# Pokememes 🔥🐦🌵🗡️🌑🦶☁️
+# Pokememes 🔥🐦🌵🗡️🌑🦶☁️🥚
 
 Juego de batalla por turnos estilo Pokémon, 100% navegador (cero dependencias, cero build).
 Elige entre tres monstruos legendarios y pelea contra el resto:
@@ -13,6 +13,7 @@ Elige entre tres monstruos legendarios y pelea contra el resto:
 | **Banana Negra** | Veneno | Una banana tan negra que la oscuridad le saca fotos. Ataques: Latigazo Blandito, Mancha Infame (envenena), Aguacate Prestado y el especial ⭐ **NOCHE DE BANANA**. |
 | **Incapie** | Lucha | Cuerpo chiquito, pies GIGANTES con cordones. Ataques: Patadón de Gigante, Pisotón Aplasta-Óxido, Tenis Nuevos y el especial ⭐ **PATADA DE 40 METROS**. |
 | **Jelly Fit** | Agua | Una nube cuajada con dos patitas, no se le ve el cuerpo. Ataques: Gotines Cuajados, Bofetón Húmedo, Recarga de Nube y el especial ⭐ **TSUNAMI DE JELLY**. |
+| **Masca Huevos** | Normal | Un huevo ovalado con marcas de mordida. Ataques: Mordisco Tímido, Cascarazo, Yema Ardiente y el especial ⭐ **MASCADA REGENERADORA** (se mete en una boca, se hace mascar y recupera 46 PS). |
 
 ## Piedra, papel y tijeras de tipos
 
