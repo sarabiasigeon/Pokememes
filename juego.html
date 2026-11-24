@@ -130,6 +130,7 @@ h1.logo span { color: var(--rojo); text-shadow: 3px 3px 0 #fff; }
 .tipo-metal { background: #9aa2ad; color: #222; }
 .tipo-veneno { background: #6a2d7a; }
 .tipo-lucha { background: var(--rojo); }
+.tipo-agua { background: var(--azul-agua); }
 .descripcion-m { font-size: .74rem; color: #666; line-height: 1.35; min-height: 52px; padding-bottom: 4px; }
 .stats-m { border-top: 2px dashed #ccc; padding: 8px 0; text-align: left; }
 .stats-m p { font-size: .7rem; margin: 3px 0; display: flex; justify-content: space-between; color: #444; }
@@ -306,6 +307,7 @@ h1.logo span { color: var(--rojo); text-shadow: 3px 3px 0 #fff; }
         <div class="sprite-mini" data-sprite="machete"></div>
         <div class="sprite-mini" data-sprite="banana"></div>
         <div class="sprite-mini" data-sprite="incapie"></div>
+        <div class="sprite-mini" data-sprite="jellyfit"></div>
       </div>
       <button id="btn-jugar" class="btn-grande">▶ ¡A PELEAR!</button>
       <p class="nota">Toca con los dedos o haz clic · 📱 compatible con móvil</p>
@@ -494,6 +496,39 @@ const SPRITES = {
     <circle cx="56.2" cy="29.8" r="1" fill="#fff"/>
     <path d="M40 25.5 L48 27.5 M60 25.5 L52 27.5" stroke="#111" stroke-width="2.2" stroke-linecap="round"/>
     <path d="M44 39.5 Q50 43.5 56 39.5" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round"/>
+  </svg>`,
+
+  jellyfit: `
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <g fill="#eef3f8" stroke="#2b2b2b" stroke-width="2.5">
+      <circle cx="30" cy="42" r="15"/>
+      <circle cx="70" cy="42" r="15"/>
+      <circle cx="50" cy="30" r="17"/>
+      <path d="M18 46 Q18 66 50 66 Q82 66 82 46 Z"/>
+    </g>
+    <g fill="#c9d8e8" opacity="0.8">
+      <ellipse cx="26" cy="56" rx="7" ry="5"/>
+      <ellipse cx="74" cy="56" rx="7" ry="5"/>
+      <ellipse cx="50" cy="61" rx="10" ry="4"/>
+    </g>
+    <circle cx="43" cy="38" r="3.2" fill="#111"/>
+    <circle cx="57" cy="38" r="3.2" fill="#111"/>
+    <circle cx="44.2" cy="36.8" r="1" fill="#fff"/>
+    <circle cx="58.2" cy="36.8" r="1" fill="#fff"/>
+    <path d="M37 33 L44 35 M63 33 L56 35" stroke="#111" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M44 48 Q50 54 56 48" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round"/>
+    <g stroke="#5aa7d9" stroke-width="2.4" stroke-linecap="round" fill="none">
+      <path d="M24 72 l-3 7"/>
+      <path d="M76 72 l3 7"/>
+      <path d="M50 71 l0 6"/>
+    </g>
+    <g stroke="#5aa7d9" stroke-width="1.4" stroke-linecap="round" fill="none">
+      <path d="M18 74 q5 3 0 6"/>
+      <path d="M84 76 q5 3 0 6"/>
+    </g>
+    <ellipse cx="38" cy="93" rx="14" ry="6.5" fill="#f0932b" stroke="#2b2b2b" stroke-width="2.5"/>
+    <ellipse cx="66" cy="93" rx="12.5" ry="6" fill="#f0932b" stroke="#2b2b2b" stroke-width="2.5"/>
+    <path d="M26 91.5 L34 88.5 M30 93.5 L38 90.5 M56 91.5 L64 88.5 M60 93.5 L68 90.5" stroke="#f8f4e3" stroke-width="1.8" stroke-linecap="round"/>
   </svg>`
 };
 
@@ -592,6 +627,25 @@ const MONSTRUOS = {
       { nombre: "Tenis Nuevos", cura: 28, clase: "atk-agua", tipo: "normal", texto: "se compra tenis relucientes y recupera la moral" },
       { nombre: "PATADA DE 40 METROS", potencia: 44, clase: "atk-secreto", tipo: "lucha", texto: "se amarra los cordones y suelta una patada que entra por la ventana", especial: true }
     ]
+  },
+  jellyfit: {
+    id: "jellyfit",
+    nombre: "Jelly Fit",
+    tipo: "agua",
+    hpMax: 110,
+    ataque: 16,
+    defensa: 20,
+    velocidad: 12,
+    claseCss: "tipo-agua",
+    descripcion: "Una nube cuajada con dos patitas. Nadie ha visto el cuerpo: solo pies que salen de la niebla. Deporte acuático oficial.",
+    fraseVictoria: "Chhh… (traducción: la nube siempre gana la regadera)",
+    fraseDerrota: "Se evaporó de la vergüenza… volvió en forma de lluvia 🌧️",
+    ataques: [
+      { nombre: "Gotines Cuajados", potencia: 21, clase: "atk-agua", tipo: "agua", texto: "suelta chorritos espesos de nube gelatina" },
+      { nombre: "Bofetón Húmedo", potencia: 23, clase: "atk-normal", tipo: "normal", texto: "suelta una cachetada húmeda que retumba" },
+      { nombre: "Recarga de Nube", cura: 32, clase: "atk-planta", tipo: "normal", texto: "se recarga en la lluvia suspirando y vuelve a la carga" },
+      { nombre: "TSUNAMI DE JELLY", potencia: 45, clase: "atk-secreto", tipo: "agua", texto: "infla su nube hasta reventar y bota una ola gelatinosa", especial: true }
+    ]
   }
 };
 
@@ -600,7 +654,8 @@ const EFECTIVIDAD = {
   planta: { fuerte: "metal", debil: "volador" },
   metal: { fuerte: "volador", debil: "planta" },
   veneno: { fuerte: "planta", debil: "metal" },
-  lucha: { fuerte: "metal", debil: "volador" }
+  lucha: { fuerte: "metal", debil: "volador" },
+  agua: { fuerte: "metal", debil: "planta" }
 };
 
 const inicioEfectivoMensaje = {
@@ -608,7 +663,8 @@ const inicioEfectivoMensaje = {
   planta: "¡La savia corroe el óxido! ¡Es superficaz!",
   metal: "¡Cortan las alas como si nada! ¡Es superficaz!",
   veneno: "¡La mancha negra infesta al verde! ¡Es superficaz!",
-  lucha: "¡El pie del 45 reventó el óxido! ¡Es superficaz!"
+  lucha: "¡El pie del 45 reventó el óxido! ¡Es superficaz!",
+  agua: "¡El chorrito oxidó el metal! ¡Es superficaz!"
 };
 const pocoEfectivoMensaje = "¡No fue muy eficaz… estuvo chafa!";
 
