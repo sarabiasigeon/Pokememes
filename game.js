@@ -422,8 +422,23 @@ const estado = {
   jugador: null,
   rival: null,
   turnoBloqueado: false,
-  terminator: false
+  terminator: false,
+  victorias: 0,
+  pendientes: []
 };
+
+function mezclar(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function prepararPendientes(miId) {
+  estado.pendientes = mezclar(Object.keys(MONSTRUOS).filter((id) => id !== miId));
+}
 
 function instancia(id, nivel = 5) {
   const base = MONSTRUOS[id];
@@ -525,6 +540,44 @@ function desmayar(m, ladoJugador) {
   const sprite = ladoJugador ? $("#jugador-sprite") : $("#rival-sprite");
   sprite.classList.add("desmayado");
   vibrar([120, 80, 200]);
+}
+
+function limpiarAnimaciones() {
+  ["#jugador-sprite", "#rival-sprite"].forEach((s) => $(s).classList.remove("desmayado", "golpeado"));
+}
+
+function prepararRival(idRival) {
+  estado.rival = instancia(idRival);
+  insertarSprite($("#rival-sprite"), estado.rival.id);
+  $("#rival-sprite").classList.remove("desmayado", "golpeado");
+}
+
+async function encadenarSiguiente() {
+  const j = estado.jugador;
+  j.venenoTurnos = 0;
+  j.ataqueMod = 1;
+  j.defensaMod = 1;
+  j.cooldownEspecial = 0;
+  const descanso = Math.round(j.hpMax * 0.25);
+  j.hp = Math.min(j.hpMax, j.hp + descanso);
+
+  prepararRival(estado.pendientes.shift());
+  limpiarLog();
+  actualizarUI();
+  pintarMenu();
+  log(`🏆 ¡VICTORIA #${estado.victorias}! Se van apilando los K.O.`, "destacado");
+  log(`${j.nombre} recupera ${descanso} PS entre peleas (y se quita veneno y modos).`, "curacion");
+  await sleep(600);
+  log(`¡ENTRA ${estado.rival.nombre}! ¡Cómo escalera de memes!`);
+}
+
+async function coronarCampeon() {
+  $("#titulo-final").textContent = "👑 ¡CAMPEÓN POKEMEME!";
+  $("#titulo-final").style.color = "var(--verde-oscuro)";
+  insertarSprite($("#sprite-final"), estado.jugador.id);
+  $("#frase-final").textContent = `${estado.jugador.nombre} limpió la cadena completa: ${estado.victorias} victorias seguidas. "${estado.jugador.fraseVictoria}"`;
+  vibrar([60, 50, 60, 50, 180, 80, 260]);
+  mostrarPantalla("final");
 }
 
 function pintarMenu() {
@@ -687,30 +740,37 @@ async function ejecutarRonda(indiceJugador) {
   pintarMenu();
 }
 
-function finalizar(ganoJugador) {
-  const ganador = ganoJugador ? estado.jugador : estado.rival;
-  const perdedor = ganoJugador ? estado.rival : estado.jugador;
-  $("#titulo-final").textContent = ganoJugador ? "🏆 ¡GANASTE!" : "💀 PERDISTE";
-  $("#titulo-final").style.color = ganoJugador ? "var(--verde-oscuro)" : "var(--rojo)";
-  insertarSprite($("#sprite-final"), ganador.id);
-  $("#frase-final").textContent = ganoJugador
-    ? `${ganador.nombre} dice: "${ganador.fraseVictoria}"`
-    : `${perdedor.nombre} dice: "${perdedor.fraseDerrota}"`;
-  vibrar(ganoJugador ? [60, 50, 60, 50, 180] : [200, 100, 300]);
+async function finalizar(ganoJugador) {
+  if (ganoJugador) {
+    estado.victorias++;
+    if (estado.pendientes.length === 0) return coronarCampeon();
+    return encadenarSiguiente();
+  }
+  const perdedor = estado.jugador;
+  $("#titulo-final").textContent = "💀 PERDISTE";
+  $("#titulo-final").style.color = "var(--rojo)";
+  insertarSprite($("#sprite-final"), estado.rival.id);
+  const racha = estado.victorias > 0
+    ? `${estado.victorias} victoria${estado.victorias === 1 ? "" : "s"} seguidas antes de caer.`
+    : "cero victorias… pasa el MADUDACO.";
+  $("#frase-final").textContent = `${estado.rival.nombre} te frenó: ${racha} ${perdedor.fraseDerrota}`;
+  vibrar([200, 100, 300]);
   mostrarPantalla("final");
 }
 
 function iniciarBatalla(idJugador) {
+  estado.victorias = 0;
+  prepararPendientes(idJugador);
   estado.jugador = instancia(idJugador);
-  estado.rival = instancia(enemigoPosible(idJugador));
+  prepararRival(estado.pendientes.shift());
   insertarSprite($("#jugador-sprite"), estado.jugador.id);
-  insertarSprite($("#rival-sprite"), estado.rival.id);
+  $("#jugador-sprite").classList.remove("desmayado", "golpeado");
   limpiarLog();
   actualizarUI();
   estado.turnoBloqueado = false;
   mostrarPantalla("batalla");
   log(`¡${estado.jugador.nombre} vs ${estado.rival.nombre}! ¡Que goleada empiece!`);
-  log("Selecciona un ataque en la caja de la derecha ➡");
+  log(`Modo cadena: si ganas, entra otro rival al toque (${estado.pendientes.length + 1} en total). ➡`);
   pintarMenu();
 }
 
