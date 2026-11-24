@@ -81,6 +81,28 @@ const SPRITES = {
     <line x1="18" y1="59" x2="22" y2="55" stroke="#5c3517" stroke-width="2.5" stroke-linecap="round"/>
     <line x1="24" y1="53" x2="28" y2="49" stroke="#5c3517" stroke-width="2.5" stroke-linecap="round"/>
     <line x1="12" y1="66" x2="16" y2="62" stroke="#5c3517" stroke-width="2.5" stroke-linecap="round"/>
+  </svg>`,
+
+  banana: `
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M30 14 Q88 28 92 80 Q93 87 86 84 Q60 76 46 48 Q36 30 28 20 Q24 15 30 14 Z" fill="#1c1c1e" stroke="#000" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M34 18 Q84 32 88 78" fill="none" stroke="#3d3d46" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M40 22 Q78 36 84 70" fill="none" stroke="#2b2b33" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M28 20 L22 8 L34 10 Z" fill="#5c4326" stroke="#000" stroke-width="2" stroke-linejoin="round"/>
+    <g opacity="0.55">
+      <ellipse cx="72" cy="70" rx="5" ry="3" fill="#0a0a0a"/>
+      <ellipse cx="50" cy="38" rx="3.5" ry="2" fill="#0a0a0a"/>
+      <circle cx="80" cy="56" r="1.8" fill="#050505"/>
+      <circle cx="58" cy="64" r="1.6" fill="#050505"/>
+    </g>
+    <circle cx="58" cy="50" r="4.2" fill="#ffe066" stroke="#000" stroke-width="1.4"/>
+    <circle cx="58" cy="50" r="1.8" fill="#111"/>
+    <circle cx="68" cy="52" r="4.2" fill="#ffe066" stroke="#000" stroke-width="1.4"/>
+    <circle cx="68" cy="52" r="1.8" fill="#111"/>
+    <path d="M52 62 Q63 56 74 62 Q63 74 52 62 Z" fill="#4a1259" stroke="#2b0b33" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M54 62 L58 66 L61 62 L64 66 L67 62 L70 65 L73 62" fill="none" stroke="#f8f4e3" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M54 46 L62 44" stroke="#000" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M66 43 L74 45" stroke="#000" stroke-width="2.2" stroke-linecap="round"/>
   </svg>`
 };
 
@@ -141,19 +163,40 @@ const MONSTRUOS = {
       { nombre: "Puliendos", cura: 26, clase: "atk-electrico", tipo: "normal", texto: "se limpia con Critical Lime y recupera filo vital" },
       { nombre: "PERCUTIR TODO", potencia: 46, clase: "atk-secreto", tipo: "metal", texto: "su aura inhala alv y suelta un tajo apocalíptico", especial: true }
     ]
+  },
+  banana: {
+    id: "banana",
+    nombre: "Banana Negra",
+    tipo: "veneno",
+    hpMax: 100,
+    ataque: 20,
+    defensa: 15,
+    velocidad: 15,
+    claseCss: "tipo-veneno",
+    descripcion: "Una banana tan negra que la oscuridad le saca fotos. Nadie sabe dónde está el tallo ni la punta.",
+    fraseVictoria: "La banana negra siempre llega… de madrugada 🌑",
+    fraseDerrota: "La pelaron al mediodía… no sobrevivió a la luz 🍌",
+    ataques: [
+      { nombre: "Latigazo Blandito", potencia: 20, clase: "atk-normal", tipo: "normal", texto: "suelta un chicote suave de banana muy madura" },
+      { nombre: "Mancha Infame", potencia: 22, clase: "atk-veneno", tipo: "veneno", veneno: true, texto: "muerde con una mancha negra y posibles daños colaterales" },
+      { nombre: "Aguacate Prestado", cura: 30, clase: "atk-planta", tipo: "normal", texto: "roba un aguacate ajeno y recupera vitalidad" },
+      { nombre: "NOCHE DE BANANA", potencia: 42, clase: "atk-secreto", tipo: "veneno", texto: "apaga las luces y golpea desde la oscuridad", especial: true }
+    ]
   }
 };
 
 const EFECTIVIDAD = {
   volador: { fuerte: "planta", debil: "metal" },
   planta: { fuerte: "metal", debil: "volador" },
-  metal: { fuerte: "volador", debil: "planta" }
+  metal: { fuerte: "volador", debil: "planta" },
+  veneno: { fuerte: "planta", debil: "metal" }
 };
 
 const inicioEfectivoMensaje = {
   volador: "¡Las plumas arrancan la penca! ¡Es superficaz!",
   planta: "¡La savia corroe el óxido! ¡Es superficaz!",
-  metal: "¡Cortan las alas como si nada! ¡Es superficaz!"
+  metal: "¡Cortan las alas como si nada! ¡Es superficaz!",
+  veneno: "¡La mancha negra infesta al verde! ¡Es superficaz!"
 };
 const pocoEfectivoMensaje = "¡No fue muy eficaz… estuvo chafa!";
 

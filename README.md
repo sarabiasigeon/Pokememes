@@ -1,4 +1,4 @@
-# Pokememes 🔥🐦🌵🗡️
+# Pokememes 🔥🐦🌵🗡️🌑
 
 Juego de batalla por turnos estilo Pokémon, 100% navegador (cero dependencias, cero build).
 Elige entre tres monstruos legendarios y pelea contra el resto:
@@ -10,6 +10,7 @@ Elige entre tres monstruos legendarios y pelea contra el resto:
 | **Pigeon** | Volador | Una paloma gordita e imponente. Ataques: Picotazo Gordo, Ala Borrachona, Migas de Pan y el especial ⭐ **BOMBA DE PICHÍ**. |
 | **Nopal** | Planta | Un nopal con la cara pintada con lápiz labial. Ataques: Lluvia de Púas, Nopalazo, Pedicure Secreto y el especial ⭐ **Lápiz Labial ETERNO** (drena vida). |
 | **Machete Oxidado** | Metal | Un machete herrumbroso con brazos de aura gaseosa. Ataques: Tajo Oxidado (puede envenenar con tétanos), Puño de Aura, Puliendos y el especial ⭐ **PERCUTIR TODO**. |
+| **Banana Negra** | Veneno | Una banana tan negra que la oscuridad le saca fotos. Ataques: Latigazo Blandito, Mancha Infame (envenena), Aguacate Prestado y el especial ⭐ **NOCHE DE BANANA**. |
 
 ## Piedra, papel y tijeras de tipos
 
@@ -17,6 +18,7 @@ Elige entre tres monstruos legendarios y pelea contra el resto:
 Volador ▶ destroza a Planta
 Planta  ▶ corroe el óxido de Metal
 Metal   ▶ corta a Volador
+Veneno  ▶ pudre a Planta (y los metales no se pudren)
 ```
 
 Ataque superficaz = daño ×2. Ataque chafa = daño ×0.5.
