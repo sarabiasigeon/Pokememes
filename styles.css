@@ -122,6 +122,7 @@ h1.logo span { color: var(--rojo); text-shadow: 3px 3px 0 #fff; }
 .tipo-planta { background: var(--verde-claro); color: #1c3a1c; }
 .tipo-metal { background: #9aa2ad; color: #222; }
 .tipo-veneno { background: #6a2d7a; }
+.tipo-lucha { background: var(--rojo); }
 .descripcion-m { font-size: .74rem; color: #666; line-height: 1.35; min-height: 52px; padding-bottom: 4px; }
 .stats-m { border-top: 2px dashed #ccc; padding: 8px 0; text-align: left; }
 .stats-m p { font-size: .7rem; margin: 3px 0; display: flex; justify-content: space-between; color: #444; }
@@ -249,6 +250,7 @@ h1.logo span { color: var(--rojo); text-shadow: 3px 3px 0 #fff; }
 .atk-fantasma { background: linear-gradient(180deg, #9b6ff0, #6d3fc4); }
 .atk-electrico { background: linear-gradient(180deg, #ffd34e, #d9a406); color: #222; text-shadow: none; }
 .atk-veneno { background: linear-gradient(180deg, #9b59b6, #6c3483); }
+.atk-lucha { background: linear-gradient(180deg, #f0932b, #c0392b); }
 .atk-secreto { background: linear-gradient(135deg, #333 0 40%, var(--rojo) 40% 60%, #333 60% 100%); }
 
 .bloqueado { filter: grayscale(.6) brightness(.8); }

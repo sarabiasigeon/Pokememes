@@ -103,6 +103,30 @@ const SPRITES = {
     <path d="M54 62 L58 66 L61 62 L64 66 L67 62 L70 65 L73 62" fill="none" stroke="#f8f4e3" stroke-width="1.4" stroke-linecap="round"/>
     <path d="M54 46 L62 44" stroke="#000" stroke-width="2.2" stroke-linecap="round"/>
     <path d="M66 43 L74 45" stroke="#000" stroke-width="2.2" stroke-linecap="round"/>
+  </svg>`,
+
+  incapie: `
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="30" cy="86" rx="23" ry="11" fill="#c0392b" stroke="#2b2b2b" stroke-width="2.5"/>
+    <ellipse cx="70" cy="86" rx="23" ry="11" fill="#c0392b" stroke="#2b2b2b" stroke-width="2.5"/>
+    <path d="M14 84 L28 79 M20 86.5 L34 82 M52 84 L66 79 M58 86.5 L72 82" stroke="#f8f4e3" stroke-width="2" stroke-linecap="round"/>
+    <ellipse cx="50" cy="58" rx="17" ry="16" fill="#f0932b" stroke="#2b2b2b" stroke-width="2.5"/>
+    <rect x="36" y="67" width="28" height="5.5" rx="2.75" fill="#c0392b" stroke="#2b2b2b" stroke-width="1.5"/>
+    <circle cx="41" cy="69.7" r="1.6" fill="#f8d38a"/>
+    <circle cx="59" cy="69.7" r="1.6" fill="#f8d38a"/>
+    <circle cx="29" cy="54" r="7" fill="#f0932b" stroke="#2b2b2b" stroke-width="2.5"/>
+    <circle cx="71" cy="54" r="7" fill="#f0932b" stroke="#2b2b2b" stroke-width="2.5"/>
+    <path d="M24 50 L34 47 M66 47 L76 50" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="50" cy="30" r="14.5" fill="#f0932b" stroke="#2b2b2b" stroke-width="2.5"/>
+    <path d="M36 28 Q50 21 64 28" fill="none" stroke="#c0392b" stroke-width="5.5"/>
+    <circle cx="36.5" cy="29" r="3" fill="#c0392b" stroke="#2b2b2b" stroke-width="1.4"/>
+    <circle cx="63.5" cy="31" r="3" fill="#c0392b" stroke="#2b2b2b" stroke-width="1.4"/>
+    <circle cx="45" cy="31" r="3.2" fill="#111"/>
+    <circle cx="55" cy="31" r="3.2" fill="#111"/>
+    <circle cx="46.2" cy="29.8" r="1" fill="#fff"/>
+    <circle cx="56.2" cy="29.8" r="1" fill="#fff"/>
+    <path d="M40 25.5 L48 27.5 M60 25.5 L52 27.5" stroke="#111" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M44 39.5 Q50 43.5 56 39.5" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round"/>
   </svg>`
 };
 
@@ -182,6 +206,25 @@ const MONSTRUOS = {
       { nombre: "Aguacate Prestado", cura: 30, clase: "atk-planta", tipo: "normal", texto: "roba un aguacate ajeno y recupera vitalidad" },
       { nombre: "NOCHE DE BANANA", potencia: 42, clase: "atk-secreto", tipo: "veneno", texto: "apaga las luces y golpea desde la oscuridad", especial: true }
     ]
+  },
+  incapie: {
+    id: "incapie",
+    nombre: "Incapie",
+    tipo: "lucha",
+    hpMax: 95,
+    ataque: 26,
+    defensa: 13,
+    velocidad: 22,
+    claseCss: "tipo-lucha",
+    descripcion: "Cuerpo chiquito, pies GIGANTES. Calcula la vida en pasos y no le temblas: ni a él.",
+    fraseVictoria: "¡Le metí la 42 del 45! (traducción: el futsol es una ciencia)",
+    fraseDerrota: "Se le cargaron los cordones… y se atoró",
+    ataques: [
+      { nombre: "Patadón de Gigante", potencia: 26, clase: "atk-normal", tipo: "normal", texto: "eleva su pie del 45 y lo suelta con todo y moral" },
+      { nombre: "Pisotón Aplasta-Óxido", potencia: 24, clase: "atk-lucha", tipo: "lucha", texto: "aplasta con su pieón cualquier resto de herrumbre" },
+      { nombre: "Tenis Nuevos", cura: 28, clase: "atk-agua", tipo: "normal", texto: "se compra tenis relucientes y recupera la moral" },
+      { nombre: "PATADA DE 40 METROS", potencia: 44, clase: "atk-secreto", tipo: "lucha", texto: "se amarra los cordones y suelta una patada que entra por la ventana", especial: true }
+    ]
   }
 };
 
@@ -189,14 +232,16 @@ const EFECTIVIDAD = {
   volador: { fuerte: "planta", debil: "metal" },
   planta: { fuerte: "metal", debil: "volador" },
   metal: { fuerte: "volador", debil: "planta" },
-  veneno: { fuerte: "planta", debil: "metal" }
+  veneno: { fuerte: "planta", debil: "metal" },
+  lucha: { fuerte: "metal", debil: "volador" }
 };
 
 const inicioEfectivoMensaje = {
   volador: "¡Las plumas arrancan la penca! ¡Es superficaz!",
   planta: "¡La savia corroe el óxido! ¡Es superficaz!",
   metal: "¡Cortan las alas como si nada! ¡Es superficaz!",
-  veneno: "¡La mancha negra infesta al verde! ¡Es superficaz!"
+  veneno: "¡La mancha negra infesta al verde! ¡Es superficaz!",
+  lucha: "¡El pie del 45 reventó el óxido! ¡Es superficaz!"
 };
 const pocoEfectivoMensaje = "¡No fue muy eficaz… estuvo chafa!";
 
