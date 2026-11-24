@@ -16,17 +16,27 @@ Elige entre tres monstruos legendarios y pelea contra el resto:
 | **Masca Huevos** | Normal | Un huevo ovalado con marcas de mordida. Ataques: Mordisco Tímido, Cascarazo, Yema Ardiente y el especial ⭐ **MASCADA REGENERADORA** (se mete en una boca, se hace mascar y recupera 46 PS). |
 | **Fantacaldo** | Fantasma | Caldo de pollo vivo con la cara en la pata. Ataques: Pozolera Fantasmal, Mordisco del Ancestro, Recalentadito y el especial ⭐ **SOPA DEL MÁS ALLÁ**. |
 
-## Piedra, papel y tijeras de tipos
+## Tabla de tipos (oficial de Pokémon, Gen VI+)
 
-```
-Volador ▶ destroza a Planta
-Planta  ▶ corroe el óxido de Metal
-Metal   ▶ corta a Volador
-Veneno  ▶ pudre a Planta (y los metales no se pudren)
-Lucha   ▶ patea a Metal (contra el volador no llega)
-Agua    ▶ oxida a Metal (pero la penca se la bebe)
-Fantasma ▶ pose a Normal (el metal no le teme al caldo)
-```
+Superficaz ×2 en verde, poco eficaz ×0.5 en gris, **IMMUNE ×0** en rojo:
+
+| Ataque ▼ / Defensa ▶ | Normal | Agua | Planta | Volador | Veneno | Lucha | Fantasma | Metal |
+|---|---|---|---|---|---|---|---|---|
+| **Normal** | | | | | | | **×0** | ×0.5 |
+| **Agua** | | ×0.5 | ×0.5 | | | | | ×0.5 |
+| **Planta** | | ×2 | ×0.5 | ×0.5 | ×0.5 | | | ×0.5 |
+| **Volador** | | | ×2 | | | ×2 | | ×0.5 |
+| **Veneno** | | | ×2 | | ×0.5 | | | **×0** |
+| **Lucha** | ×2 | | | ×0.5 | ×0.5 | | **×0** | ×2 |
+| **Fantasma** | **×0** | | | | | | ×2 | |
+| **Metal** | | ×0.5 | | | | | | ×0.5 |
+
+Datos curiosos del roster:
+- **Pigeon** (Volador) pica fuerte a Nopal 🌵 y a Incapie 🦶.
+- **Masca Huevos** 🥚 no toca a **Fantacaldo** 🍜: el fantasma viene y se va. Su único daño posible es a los demás tipos.
+- **Banana Negra** 🌑 no puede pudrir metales (**×0** contra el Machete).
+- **Incapie** 🦶 traqué al Machete (Lucha ×2 vs Metal) pero no puede con Fantacaldo.
+- El agua ya no oxida nada aquí: la tabla oficial marca Agua ×0.5 vs Metal.
 
 Ataque superficaz = daño ×2. Ataque chafa = daño ×0.5.
 

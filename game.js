@@ -373,26 +373,31 @@ const MONSTRUOS = {
   }
 };
 
-const EFECTIVIDAD = {
-  volador: { fuerte: "planta", debil: "metal" },
-  planta: { fuerte: "metal", debil: "volador" },
-  metal: { fuerte: "volador", debil: "planta" },
-  veneno: { fuerte: "planta", debil: "metal" },
-  lucha: { fuerte: "metal", debil: "volador" },
-  agua: { fuerte: "metal", debil: "planta" },
-  fantasma: { fuerte: "normal", debil: "metal" }
+const TABLA_TIPOS = {
+  normal: { metal: 0.5, fantasma: 0 },
+  agua: { agua: 0.5, planta: 0.5 },
+  planta: { agua: 2, planta: 0.5, veneno: 0.5, volador: 0.5, metal: 0.5 },
+  volador: { planta: 2, lucha: 2, metal: 0.5 },
+  veneno: { planta: 2, veneno: 0.5, metal: 0 },
+  lucha: { normal: 2, metal: 2, veneno: 0.5, volador: 0.5, fantasma: 0 },
+  fantasma: { fantasma: 2, normal: 0 },
+  metal: { agua: 0.5, metal: 0.5 }
 };
 
+function multiplicadorTipo(tipoAtaque, tipoDefensor) {
+  return (TABLA_TIPOS[tipoAtaque] || {})[tipoDefensor] ?? 1;
+}
+
 const inicioEfectivoMensaje = {
-  volador: "¡Las plumas arrancan la penca! ¡Es superficaz!",
-  planta: "¡La savia corroe el óxido! ¡Es superficaz!",
-  metal: "¡Cortan las alas como si nada! ¡Es superficaz!",
-  veneno: "¡La mancha negra infesta al verde! ¡Es superficaz!",
-  lucha: "¡El pie del 45 reventó el óxido! ¡Es superficaz!",
-  agua: "¡El chorrito oxidó el metal! ¡Es superficaz!",
+  normal: "¡Un golpe directo y torpe! ¡Es superficaz!",
+  volador: "¡Las alas pican donde más duele! ¡Es superficaz!",
+  planta: "¡Las raíces beben el agua enemiga! ¡Es superficaz!",
+  veneno: "¡El tóxico derrite lo verde! ¡Es superficaz!",
+  lucha: "¡El pie del 45 reventó todo lo duro! ¡Es superficaz!",
   fantasma: "¡El caldo pose el alma! ¡Es superficaz!"
 };
 const pocoEfectivoMensaje = "¡No fue muy eficaz… estuvo chafa!";
+const inmuneMensaje = "¡No le afecta NADA! ¡Inmune total!";
 
 const $ = (sel) => document.querySelector(sel);
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -596,13 +601,9 @@ function pintarMenu() {
 }
 
 function calcularDano(atk, lanzador, receptor) {
-  if (!atk.potencia) return { dano: 0, danoText: "", critico: false, eficacia: 1, tipoDano: "" };
-  let eficacia = 1;
-  const tipoAtaque = atk.tipo;
-  if (EFECTIVIDAD[tipoAtaque]) {
-    if (EFECTIVIDAD[tipoAtaque].fuerte === receptor.tipo) eficacia = 2;
-    else if (EFECTIVIDAD[tipoAtaque].debil === receptor.tipo) eficacia = 0.5;
-  }
+  if (!atk.potencia) return { dano: 0, danoText: "", critico: false, eficacia: 1 };
+  const eficacia = multiplicadorTipo(atk.tipo, receptor.tipo);
+  if (eficacia === 0) return { dano: 0, danoText: "", critico: false, eficacia: 0 };
   const critico = Math.random() < 0.12 ? 1.5 : 1;
   const azar = 0.85 + Math.random() * 0.25;
   const base = (atk.potencia * (lanzador.ataque * lanzador.ataqueMod)) / (receptor.defensa * receptor.defensaMod);
@@ -629,6 +630,9 @@ async function aplicarAtaque(lanzador, receptor, atk, lanzadorEsJugador) {
     const { dano, critico, eficacia } = calcularDano(atk, lanzador, receptor);
     if (Math.random() < 0.08) {
       log(`…pero falló. Puro nabo, cero estilo.`);
+      await sleep(650);
+    } else if (eficacia === 0) {
+      log(`El ataque rebota sin efecto fantasmal: ${inmuneMensaje}`, "destacado");
       await sleep(650);
     } else {
       receptor.hp = Math.max(0, receptor.hp - dano);
@@ -665,7 +669,10 @@ function elegirMovimientoCpu(cpu) {
     if (cura) return cura.i;
   }
   const especial = disponibles.find((x) => x.a.especial);
-  if (especial && Math.random() < 0.7) return especial.i;
+  if (especial) {
+    const umbral = especial.a.cura ? 0.5 : 0.8;
+    if (cpu.hp < cpu.hpMax * umbral && Math.random() < 0.8) return especial.i;
+  }
   const normales = disponibles.filter((x) => !x.a.especial);
   return normales[Math.floor(Math.random() * normales.length)].i;
 }
