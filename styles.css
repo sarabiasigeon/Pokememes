@@ -124,6 +124,7 @@ h1.logo span { color: var(--rojo); text-shadow: 3px 3px 0 #fff; }
 .tipo-veneno { background: #6a2d7a; }
 .tipo-lucha { background: var(--rojo); }
 .tipo-agua { background: var(--azul-agua); }
+.tipo-normal { background: #8a8f98; }
 .descripcion-m { font-size: .74rem; color: #666; line-height: 1.35; min-height: 52px; padding-bottom: 4px; }
 .stats-m { border-top: 2px dashed #ccc; padding: 8px 0; text-align: left; }
 .stats-m p { font-size: .7rem; margin: 3px 0; display: flex; justify-content: space-between; color: #444; }

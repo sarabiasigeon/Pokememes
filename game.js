@@ -160,6 +160,26 @@ const SPRITES = {
     <ellipse cx="38" cy="93" rx="14" ry="6.5" fill="#f0932b" stroke="#2b2b2b" stroke-width="2.5"/>
     <ellipse cx="66" cy="93" rx="12.5" ry="6" fill="#f0932b" stroke="#2b2b2b" stroke-width="2.5"/>
     <path d="M26 91.5 L34 88.5 M30 93.5 L38 90.5 M56 91.5 L64 88.5 M60 93.5 L68 90.5" stroke="#f8f4e3" stroke-width="1.8" stroke-linecap="round"/>
+  </svg>`,
+
+  mascuevos: `
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 14 C66 14 76 30 78 46 Q70 50 77 58 Q70 64 74 70 C72 82 62 88 50 88 C38 88 28 82 26 70 C22 44 34 14 50 14 Z" fill="#fdf6e3" stroke="#2b2b2b" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M77 58 Q71 61 74 70" fill="none" stroke="#d9c9a3" stroke-width="2" stroke-linecap="round"/>
+    <path d="M78 46 Q72 48 77 58" fill="none" stroke="#d9c9a3" stroke-width="2" stroke-linecap="round"/>
+    <path d="M79 44 l7 2 l-6 3 Z" fill="#fdf6e3" stroke="#2b2b2b" stroke-width="1.4"/>
+    <path d="M75 71 l6 4 l-7 1 Z" fill="#fdf6e3" stroke="#2b2b2b" stroke-width="1.4"/>
+    <circle cx="88" cy="52" r="1.6" fill="#d9c9a3"/>
+    <circle cx="86" cy="68" r="1.3" fill="#d9c9a3"/>
+    <circle cx="44" cy="42" r="3.4" fill="#111"/>
+    <circle cx="58" cy="42" r="3.4" fill="#111"/>
+    <circle cx="45.2" cy="40.8" r="1.1" fill="#fff"/>
+    <circle cx="59.2" cy="40.8" r="1.1" fill="#fff"/>
+    <path d="M38 36 L46 38 M64 36 L56 38" stroke="#111" stroke-width="2.3" stroke-linecap="round"/>
+    <path d="M46 52 Q52 56 58 52" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round"/>
+    <ellipse cx="37" cy="49" rx="4" ry="2.4" fill="#f7a1b5" opacity="0.7"/>
+    <ellipse cx="65" cy="49" rx="4" ry="2.4" fill="#f7a1b5" opacity="0.7"/>
+    <path d="M30 22 q4 -4 9 -2" fill="none" stroke="#e8dfc8" stroke-width="2.4" stroke-linecap="round"/>
   </svg>`
 };
 
@@ -276,6 +296,25 @@ const MONSTRUOS = {
       { nombre: "Bofetón Húmedo", potencia: 23, clase: "atk-normal", tipo: "normal", texto: "suelta una cachetada húmeda que retumba" },
       { nombre: "Recarga de Nube", cura: 32, clase: "atk-planta", tipo: "normal", texto: "se recarga en la lluvia suspirando y vuelve a la carga" },
       { nombre: "TSUNAMI DE JELLY", potencia: 45, clase: "atk-secreto", tipo: "agua", texto: "infla su nube hasta reventar y bota una ola gelatinosa", especial: true }
+    ]
+  },
+  mascuevos: {
+    id: "mascuevos",
+    nombre: "Masca Huevos",
+    tipo: "normal",
+    hpMax: 100,
+    ataque: 18,
+    defensa: 18,
+    velocidad: 14,
+    claseCss: "tipo-normal",
+    descripcion: "Un huevo ovalado con marcas de mordida. No se sabe si escapa de las bocas o las visita voluntariamente.",
+    fraseVictoria: "Chuc-chuc… (traducción: los dientes ajenos son mi spa)",
+    fraseDerrota: "Lo mascaron de verdad esta vez… terminó en pan con huevo 🍞",
+    ataques: [
+      { nombre: "Mordisco Tímido", potencia: 20, clase: "atk-normal", tipo: "normal", texto: "suelta un mordisquito que ni él se cree" },
+      { nombre: "Cascarazo", potencia: 24, clase: "atk-normal", tipo: "normal", texto: "suelta un cabezazo de cáscara dura" },
+      { nombre: "Yema Ardiente", potencia: 22, clase: "atk-fuego", tipo: "normal", texto: "eyecta yema hirviendo a presión" },
+      { nombre: "MASCADA REGENERADORA", cura: 46, clase: "atk-secreto", tipo: "normal", texto: "se mete en la boca rival, se hace mascar contea y sale diputado y renovado", especial: true }
     ]
   }
 };
