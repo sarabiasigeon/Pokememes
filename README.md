@@ -54,9 +54,9 @@ Extras: golpes críticos, envenenamiento por óxido, curaciones, chips de estado
 
 Pulsa **🗺️ EXPLORAR EL MAPA** en el título para jugar el modo de exploración:
 
-1. Elige tu monstruo inicial (Nv. 5) y aparecerás en un mapa de 12×7 casillas.
+1. Elige tu monstruo inicial (Nv. 5) y aparecerás en un mapa de 12×7 casillas. Tu personaje es un entrenador 2D que lleva en la **cabeza al pokememe activo** (cámbialo tocando a un miembro del equipo).
 2. Muévete con el **D-pad táctil** (en móvil) o con **WASD / flechas** del teclado.
-3. Los otros 7 pokememes deambulan por el mapa como silvestres (Nv. 2–5). Pisa su casilla para iniciar la batalla.
+3. Los otros 7 pokememes se esconden en **ZONAS OSCURAS** 🌑: grupos de casillas más oscuras y pegadas entre sí. Sabes **DÓNDE** hay un pokememe, pero **NO CUÁL** te saltará hasta que pisas la zona (Nv. 2–5).
 4. En las batallas silvestres aparece el botón **⚽ CAPTURAR**: lanza el Zapato Poké con estas probabilidades según el HP del rival:
    - HP del rival alto (verde): **15%**
    - HP medio (amarillo): **45%**

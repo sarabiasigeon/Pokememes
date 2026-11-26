@@ -432,7 +432,8 @@ const estado = {
   pendientes: [],
   equipo: {},
   activo: null,
-  wilds: [],
+  zonas: [],
+  zonaActiva: null,
   salvaje: false,
   posJugador: { x: 1, y: 3 },
   modoSeleccion: "cadena"
@@ -792,7 +793,7 @@ async function finalizarSalvaje(ganoJugador) {
     log(`¡${estado.jugador.nombre} gana ${xp} PX!`);
     ganarXP(estado.jugador, xp);
     await sleep(700);
-    quitarWild(estado.rival.id);
+    quitarZona();
     const mensaje = pokedexCompleta()
       ? `🏆 ¡${estado.rival.nombre} derrotado y POKÉDEX COMPLETA!`
       : `¡${estado.rival.nombre} derrotado! +${xp} PX. De vuelta al mapa…`;
@@ -819,7 +820,7 @@ async function intentarCaptura() {
     estado.rival.hp = estado.rival.hpMax;
     estado.equipo[estado.rival.id] = estado.rival;
     await sleep(800);
-    quitarWild(estado.rival.id);
+    quitarZona();
     salirAlMapa(pokedexCompleta()
       ? `¡${estado.rival.nombre} capturado! 🏆 ¡POKÉDEX COMPLETA!`
       : `¡${estado.rival.nombre} capturado! Ya son ${Object.keys(estado.equipo).length}/8 en el equipo.`);
@@ -932,26 +933,53 @@ function pokedexCompleta() {
   return Object.keys(estado.equipo).length >= Object.keys(MONSTRUOS).length;
 }
 
-function generarWilds() {
-  const ids = Object.keys(MONSTRUOS).filter((id) => !(id in estado.equipo));
-  const celdas = [];
-  for (let y = 0; y < MAPA_FILAS; y++) {
-    for (let x = 0; x < MAPA_COLS; x++) {
-      if (x === estado.posJugador.x && y === estado.posJugador.y) continue;
-      celdas.push({ x, y });
+function generarZonas() {
+  const ids = mezclar(Object.keys(MONSTRUOS).filter((id) => !(id in estado.equipo)));
+  const ocupadas = new Set([estado.posJugador.x + "," + estado.posJugador.y]);
+  estado.zonas = ids.map((id) => {
+    const tam = 2 + Math.floor(Math.random() * 3);
+    let celdas = null;
+    for (let intento = 0; intento < 300 && !celdas; intento++) {
+      const ax = Math.floor(Math.random() * MAPA_COLS);
+      const ay = Math.floor(Math.random() * MAPA_FILAS);
+      if (ocupadas.has(ax + "," + ay)) continue;
+      const grupo = [{ x: ax, y: ay }];
+      let guardia = 0;
+      while (grupo.length < tam && guardia < 50) {
+        guardia++;
+        const base = grupo[Math.floor(Math.random() * grupo.length)];
+        const dir = Object.values(DIRECCIONES)[Math.floor(Math.random() * 4)];
+        const nx = base.x + dir[0];
+        const ny = base.y + dir[1];
+        if (nx < 0 || ny < 0 || nx >= MAPA_COLS || ny >= MAPA_FILAS) continue;
+        if (ocupadas.has(nx + "," + ny) || grupo.some((c) => c.x === nx && c.y === ny)) continue;
+        grupo.push({ x: nx, y: ny });
+      }
+      if (grupo.length >= 2) celdas = grupo;
     }
-  }
-  const barajadas = mezclar(celdas);
-  estado.wilds = ids.map((id, i) => ({
-    id,
-    x: barajadas[i].x,
-    y: barajadas[i].y,
-    nivel: 2 + Math.floor(Math.random() * 4)
-  }));
+    if (!celdas) celdas = [{ x: Math.floor(Math.random() * MAPA_COLS), y: Math.floor(Math.random() * MAPA_FILAS) }];
+    celdas.forEach((c) => ocupadas.add(c.x + "," + c.y));
+    return { id, nivel: 2 + Math.floor(Math.random() * 4), celdas };
+  });
 }
 
-function quitarWild(id) {
-  estado.wilds = estado.wilds.filter((w) => w.id !== id);
+function quitarZona() {
+  estado.zonas = estado.zonas.filter((z) => z !== estado.zonaActiva);
+  estado.zonaActiva = null;
+}
+
+function spriteJugador(id) {
+  const interior = SPRITES[id].replace(/<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(50 27) scale(0.42) translate(-50 -50)">${interior}</g>
+    <rect x="34" y="47" width="32" height="28" rx="11" fill="#e5484d" stroke="#2b2b2b" stroke-width="3"/>
+    <rect x="24" y="51" width="10" height="21" rx="5" fill="#e5484d" stroke="#2b2b2b" stroke-width="3"/>
+    <rect x="66" y="51" width="10" height="21" rx="5" fill="#e5484d" stroke="#2b2b2b" stroke-width="3"/>
+    <rect x="38" y="73" width="10" height="17" rx="4" fill="#3b5b8f" stroke="#2b2b2b" stroke-width="2.5"/>
+    <rect x="52" y="73" width="10" height="17" rx="4" fill="#3b5b8f" stroke="#2b2b2b" stroke-width="2.5"/>
+    <ellipse cx="41" cy="93" rx="9" ry="4.5" fill="#2b2b2b"/>
+    <ellipse cx="59" cy="93" rx="9" ry="4.5" fill="#2b2b2b"/>
+  </svg>`;
 }
 
 function pintarEquipo() {
@@ -964,6 +992,7 @@ function pintarEquipo() {
     el.addEventListener("click", () => {
       estado.activo = m.id;
       pintarEquipo();
+      if (estado.zonas.length) pintarMapa();
     });
     cont.appendChild(el);
   });
@@ -977,50 +1006,52 @@ function pintarMapa() {
     for (let x = 0; x < MAPA_COLS; x++) {
       const c = document.createElement("div");
       c.className = "casilla";
-      const wild = estado.wilds.find((w) => w.x === x && w.y === y);
-      if (wild) {
-        c.classList.add("silvestre");
-        c.innerHTML = `<div class="sprite-mini">${SPRITES[wild.id]}</div>`;
+      if (estado.zonas.some((z) => z.celdas.some((celda) => celda.x === x && celda.y === y))) c.classList.add("oscura");
+      if (estado.posJugador.x === x && estado.posJugador.y === y) {
+        c.classList.add("jugador");
+        c.innerHTML = `<div class="sprite-jugador">${spriteJugador(estado.activo)}</div>`;
       }
-      if (estado.posJugador.x === x && estado.posJugador.y === y) c.classList.add("jugador");
       cont.appendChild(c);
     }
   }
 }
 
 function mover(dx, dy) {
-  if (!$("#pantalla-mapa").classList.contains("activa")) return;
+  if (!$("#pantalla-mapa").classList.contains("activa") || estado.salvaje) return;
   const nx = Math.min(MAPA_COLS - 1, Math.max(0, estado.posJugador.x + dx));
   const ny = Math.min(MAPA_FILAS - 1, Math.max(0, estado.posJugador.y + dy));
   if (nx === estado.posJugador.x && ny === estado.posJugador.y) return;
   estado.posJugador = { x: nx, y: ny };
-  const wild = estado.wilds.find((w) => w.x === nx && w.y === ny);
-  if (wild) {
-    encontrarSalvaje(wild);
+  const zona = estado.zonas.find((z) => z.celdas.some((c) => c.x === nx && c.y === ny));
+  if (zona) {
+    encontrarSalvaje(zona);
     return;
   }
   pintarMapa();
 }
 
-function encontrarSalvaje(wild) {
+function encontrarSalvaje(zona) {
   estado.salvaje = true;
+  estado.zonaActiva = zona;
   estado.jugador = estado.equipo[estado.activo];
   estado.jugador.venenoTurnos = 0;
   estado.jugador.cooldownEspecial = 0;
   estado.jugador.ataqueMod = 1;
   estado.jugador.defensaMod = 1;
-  prepararRival(instancia(wild.id, wild.nivel));
+  prepararRival(instancia(zona.id, zona.nivel));
   estado.turnoBloqueado = false;
   limpiarLog();
   actualizarUI();
   mostrarPantalla("batalla");
-  log(`¡Un ${estado.rival.nombre} salvaje (Nv. ${estado.rival.nivel}) apareció!`);
+  log("🌿 ¡La maleza oscura se agita… y SALTA algo!");
+  log(`¡Es un ${estado.rival.nombre} salvaje (Nv. ${estado.rival.nivel})!`);
   log("¡Derrótalo para ganar PX, o lánzale el Zapato Poké ⚽ para capturarlo!");
   pintarMenu();
 }
 
 function salirAlMapa(mensaje) {
   estado.salvaje = false;
+  estado.zonaActiva = null;
   estado.turnoBloqueado = false;
   limpiarAnimaciones();
   mostrarPantalla("mapa");
@@ -1034,12 +1065,12 @@ function entrarMapa() {
   }
   if (!estado.activo) return;
   curarEquipo();
-  generarWilds();
+  generarZonas();
   mostrarPantalla("mapa");
   pintarMapa();
   $("#mapa-mensaje").textContent = pokedexCompleta()
     ? "🏆 ¡POKÉDEX COMPLETA! Los 8 pokememes son tuyos (sigue peleando por PX si quieres)."
-    : `En el mapa hay ${estado.wilds.length} pokememes sueltos. ¡A cazarlos!`;
+    : `En el mapa hay ${estado.zonas.length} ZONAS OSCURAS 🌑. ¡Sabes DÓNDE hay pokememe, pero no CUÁL te saldrá!`;
 }
 
 $("#btn-jugar").addEventListener("click", () => {

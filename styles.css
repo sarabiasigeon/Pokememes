@@ -272,7 +272,10 @@ h1.logo span { color: var(--rojo); text-shadow: 3px 3px 0 #fff; }
 .mapa { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; background: #8fbf6b; border: var(--borde); border-radius: 12px; padding: 8px; }
 .casilla { aspect-ratio: 1; background: #a8d48a; border-radius: 4px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .casilla.jugador { background: #7bc043; box-shadow: inset 0 0 0 2px #1c3a1c; }
-.casilla.jugador::after { content: "🧍"; font-size: clamp(12px, 3vw, 20px); }
+.casilla.jugador .sprite-jugador { width: 100%; height: 100%; animation: flotar 2s ease-in-out infinite; }
+.casilla.jugador .sprite-jugador svg { width: 100%; height: 100%; }
+.casilla.oscura { background: #2f4a28; box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, .4); }
+.casilla.oscura::before { content: "\2753"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: clamp(10px, 2.4vw, 16px); opacity: .55; }
 .casilla.silvestre { background: #6fae57; }
 .casilla.silvestre .sprite-mini { width: 84%; height: 84%; }
 
