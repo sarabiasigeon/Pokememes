@@ -429,8 +429,17 @@ const estado = {
   turnoBloqueado: false,
   terminator: false,
   victorias: 0,
-  pendientes: []
+  pendientes: [],
+  equipo: {},
+  activo: null,
+  wilds: [],
+  salvaje: false,
+  posJugador: { x: 1, y: 3 },
+  modoSeleccion: "cadena"
 };
+
+const MAPA_COLS = 12;
+const MAPA_FILAS = 7;
 
 function mezclar(arr) {
   const a = [...arr];
@@ -447,16 +456,20 @@ function prepararPendientes(miId) {
 
 function instancia(id, nivel = 5) {
   const base = MONSTRUOS[id];
+  const n = nivel - 1;
+  const hpMax = base.hpMax + n * 8;
   return {
     id,
     nombre: base.nombre,
     tipo: base.tipo,
     claseCss: base.claseCss,
     nivel,
-    hpMax: base.hpMax,
-    hp: base.hpMax,
-    ataque: base.ataque,
-    defensa: base.defensa,
+    xp: 0,
+    hpMax,
+    hp: hpMax,
+    ataque: base.ataque + n * 2,
+    defensa: base.defensa + n * 2,
+    velocidad: base.velocidad + n,
     ataqueMod: 1,
     defensaMod: 1,
     venenoTurnos: 0,
@@ -465,6 +478,24 @@ function instancia(id, nivel = 5) {
     fraseVictoria: base.fraseVictoria,
     fraseDerrota: base.fraseDerrota
   };
+}
+
+function xpNecesaria(m) {
+  return 20 + m.nivel * 10;
+}
+
+function ganarXP(m, xp) {
+  m.xp += xp;
+  while (m.xp >= xpNecesaria(m)) {
+    m.xp -= xpNecesaria(m);
+    m.nivel++;
+    m.hpMax += 8;
+    m.ataque += 2;
+    m.defensa += 2;
+    m.velocidad += 1;
+    m.hp = Math.min(m.hpMax, m.hp + 8);
+    log(`⬆ ¡${m.nombre} subió al nivel ${m.nivel}! (+8 HP, +2 ATK, +2 DEF, +1 VEL)`, "curacion");
+  }
 }
 
 function enemigoPosible(miId) {
@@ -551,8 +582,8 @@ function limpiarAnimaciones() {
   ["#jugador-sprite", "#rival-sprite"].forEach((s) => $(s).classList.remove("desmayado", "golpeado"));
 }
 
-function prepararRival(idRival) {
-  estado.rival = instancia(idRival);
+function prepararRival(rivalInst) {
+  estado.rival = rivalInst;
   insertarSprite($("#rival-sprite"), estado.rival.id);
   $("#rival-sprite").classList.remove("desmayado", "golpeado");
 }
@@ -598,6 +629,14 @@ function pintarMenu() {
     btn.addEventListener("click", () => turnoJugador(i));
     menu.appendChild(btn);
   });
+  if (estado.salvaje) {
+    const cap = document.createElement("button");
+    cap.className = "btn-ataque atk-agua";
+    cap.innerHTML = "⚽ CAPTURAR<small>Zapato Poké · mejor con poca vida</small>";
+    cap.disabled = estado.turnoBloqueado;
+    cap.addEventListener("click", () => intentarCaptura());
+    menu.appendChild(cap);
+  }
 }
 
 function calcularDano(atk, lanzador, receptor) {
@@ -747,7 +786,69 @@ async function ejecutarRonda(indiceJugador) {
   pintarMenu();
 }
 
+async function finalizarSalvaje(ganoJugador) {
+  if (ganoJugador) {
+    const xp = 15 + estado.rival.nivel * 5;
+    log(`¡${estado.jugador.nombre} gana ${xp} PX!`);
+    ganarXP(estado.jugador, xp);
+    await sleep(700);
+    quitarWild(estado.rival.id);
+    const mensaje = pokedexCompleta()
+      ? `🏆 ¡${estado.rival.nombre} derrotado y POKÉDEX COMPLETA!`
+      : `¡${estado.rival.nombre} derrotado! +${xp} PX. De vuelta al mapa…`;
+    salirAlMapa(mensaje);
+    return;
+  }
+  log(`¡${estado.jugador.nombre} se desmayó! El equipo corre al Centro Pokememe…`);
+  await sleep(800);
+  curarEquipo();
+  salirAlMapa("Fuiste derrotado… el Centro Pokememe curó a tu equipo gratis.");
+}
+
+async function intentarCaptura() {
+  if (estado.turnoBloqueado || !estado.salvaje) return;
+  deshabilitar(true);
+  log(`¡Le lanzas el ZAPATO POKÉ a ${estado.rival.nombre}! ⚽`);
+  await sleep(700);
+  const ratio = estado.rival.hp / estado.rival.hpMax;
+  let p = ratio < 0.25 ? 0.75 : ratio < 0.5 ? 0.45 : 0.15;
+  if (estado.equipo[estado.rival.id]) p = Math.min(0.95, p * 1.4);
+  if (Math.random() < p) {
+    log(`¡1… 2… 3… CAPTURADO! ¡${estado.rival.nombre} es tuyo!`, "destacado");
+    vibrar([60, 50, 60, 50, 180]);
+    estado.rival.hp = estado.rival.hpMax;
+    estado.equipo[estado.rival.id] = estado.rival;
+    await sleep(800);
+    quitarWild(estado.rival.id);
+    salirAlMapa(pokedexCompleta()
+      ? `¡${estado.rival.nombre} capturado! 🏆 ¡POKÉDEX COMPLETA!`
+      : `¡${estado.rival.nombre} capturado! Ya son ${Object.keys(estado.equipo).length}/8 en el equipo.`);
+    return;
+  }
+  log(`¡${estado.rival.nombre} patada el zapato y se escapó! ¡Qué rabia!`);
+  await sleep(600);
+  const idxCpu = elegirMovimientoCpu(estado.rival);
+  const atkC = estado.rival.ataques[idxCpu];
+  if (atkC.especial) estado.rival.cooldownEspecial = 3;
+  await aplicarAtaque(estado.rival, estado.jugador, atkC, false);
+  if (estado.jugador.hp <= 0) {
+    desmayar(estado.jugador, true);
+    log(`¡${estado.jugador.nombre} se queda K.O.!`);
+    await sleep(800);
+    return finalizarSalvaje(false);
+  }
+  await pasarTurnoEstados(true);
+  if (estado.jugador.hp <= 0) {
+    desmayar(estado.jugador, true);
+    log(`¡${estado.jugador.nombre} se rinde ante el veneno!`);
+    await sleep(800);
+    return finalizarSalvaje(false);
+  }
+  deshabilitar(false);
+}
+
 async function finalizar(ganoJugador) {
+  if (estado.salvaje) return finalizarSalvaje(ganoJugador);
   if (ganoJugador) {
     estado.victorias++;
     if (estado.pendientes.length === 0) return coronarCampeon();
@@ -768,8 +869,8 @@ async function finalizar(ganoJugador) {
 function iniciarBatalla(idJugador) {
   estado.victorias = 0;
   prepararPendientes(idJugador);
-  estado.jugador = instancia(idJugador);
-  prepararRival(estado.pendientes.shift());
+  estado.jugador = instancia(idJugador, 5);
+  prepararRival(instancia(estado.pendientes.shift(), 5));
   insertarSprite($("#jugador-sprite"), estado.jugador.id);
   $("#jugador-sprite").classList.remove("desmayado", "golpeado");
   limpiarLog();
@@ -781,7 +882,8 @@ function iniciarBatalla(idJugador) {
   pintarMenu();
 }
 
-function pintarSelección() {
+function pintarSelección(modo) {
+  estado.modoSeleccion = modo || "cadena";
   const cont = $("#tarjetas");
   cont.innerHTML = "";
   Object.values(MONSTRUOS).forEach((m) => {
@@ -798,7 +900,15 @@ function pintarSelección() {
         <p><strong>DEF</strong> ${m.defensa}</p>
         <p><strong>VEL</strong> ${m.velocidad}</p>
       </div>`;
-    card.addEventListener("click", () => iniciarBatalla(m.id));
+    card.addEventListener("click", () => {
+      if (estado.modoSeleccion === "mapa") {
+        if (!estado.equipo[m.id]) estado.equipo[m.id] = instancia(m.id, 5);
+        estado.activo = m.id;
+        entrarMapa();
+      } else {
+        iniciarBatalla(m.id);
+      }
+    });
     cont.appendChild(card);
   });
   cont.querySelectorAll("[data-sprite]").forEach((el) => insertarSprite(el, el.dataset.sprite));
@@ -808,14 +918,165 @@ function pintarSelecciónMini() {
   document.querySelectorAll("[data-sprite]").forEach((el) => insertarSprite(el, el.dataset.sprite));
 }
 
+function curarEquipo() {
+  Object.values(estado.equipo).forEach((m) => {
+    m.hp = m.hpMax;
+    m.venenoTurnos = 0;
+    m.cooldownEspecial = 0;
+    m.ataqueMod = 1;
+    m.defensaMod = 1;
+  });
+}
+
+function pokedexCompleta() {
+  return Object.keys(estado.equipo).length >= Object.keys(MONSTRUOS).length;
+}
+
+function generarWilds() {
+  const ids = Object.keys(MONSTRUOS).filter((id) => !(id in estado.equipo));
+  const celdas = [];
+  for (let y = 0; y < MAPA_FILAS; y++) {
+    for (let x = 0; x < MAPA_COLS; x++) {
+      if (x === estado.posJugador.x && y === estado.posJugador.y) continue;
+      celdas.push({ x, y });
+    }
+  }
+  const barajadas = mezclar(celdas);
+  estado.wilds = ids.map((id, i) => ({
+    id,
+    x: barajadas[i].x,
+    y: barajadas[i].y,
+    nivel: 2 + Math.floor(Math.random() * 4)
+  }));
+}
+
+function quitarWild(id) {
+  estado.wilds = estado.wilds.filter((w) => w.id !== id);
+}
+
+function pintarEquipo() {
+  const cont = $("#equipo");
+  cont.innerHTML = "";
+  Object.values(estado.equipo).forEach((m) => {
+    const el = document.createElement("div");
+    el.className = "miembro" + (m.id === estado.activo ? " activo" : "");
+    el.innerHTML = `<div class="sprite-mini">${SPRITES[m.id]}</div><div><strong>${m.nombre}</strong><br>Nv. ${m.nivel} · XP ${m.xp}/${xpNecesaria(m)}<div class="mini-hp"><i style="width:${(m.hp / m.hpMax) * 100}%"></i></div></div>`;
+    el.addEventListener("click", () => {
+      estado.activo = m.id;
+      pintarEquipo();
+    });
+    cont.appendChild(el);
+  });
+}
+
+function pintarMapa() {
+  pintarEquipo();
+  const cont = $("#mapa");
+  cont.innerHTML = "";
+  for (let y = 0; y < MAPA_FILAS; y++) {
+    for (let x = 0; x < MAPA_COLS; x++) {
+      const c = document.createElement("div");
+      c.className = "casilla";
+      const wild = estado.wilds.find((w) => w.x === x && w.y === y);
+      if (wild) {
+        c.classList.add("silvestre");
+        c.innerHTML = `<div class="sprite-mini">${SPRITES[wild.id]}</div>`;
+      }
+      if (estado.posJugador.x === x && estado.posJugador.y === y) c.classList.add("jugador");
+      cont.appendChild(c);
+    }
+  }
+}
+
+function mover(dx, dy) {
+  if (!$("#pantalla-mapa").classList.contains("activa")) return;
+  const nx = Math.min(MAPA_COLS - 1, Math.max(0, estado.posJugador.x + dx));
+  const ny = Math.min(MAPA_FILAS - 1, Math.max(0, estado.posJugador.y + dy));
+  if (nx === estado.posJugador.x && ny === estado.posJugador.y) return;
+  estado.posJugador = { x: nx, y: ny };
+  const wild = estado.wilds.find((w) => w.x === nx && w.y === ny);
+  if (wild) {
+    encontrarSalvaje(wild);
+    return;
+  }
+  pintarMapa();
+}
+
+function encontrarSalvaje(wild) {
+  estado.salvaje = true;
+  estado.jugador = estado.equipo[estado.activo];
+  estado.jugador.venenoTurnos = 0;
+  estado.jugador.cooldownEspecial = 0;
+  estado.jugador.ataqueMod = 1;
+  estado.jugador.defensaMod = 1;
+  prepararRival(instancia(wild.id, wild.nivel));
+  estado.turnoBloqueado = false;
+  limpiarLog();
+  actualizarUI();
+  mostrarPantalla("batalla");
+  log(`¡Un ${estado.rival.nombre} salvaje (Nv. ${estado.rival.nivel}) apareció!`);
+  log("¡Derrótalo para ganar PX, o lánzale el Zapato Poké ⚽ para capturarlo!");
+  pintarMenu();
+}
+
+function salirAlMapa(mensaje) {
+  estado.salvaje = false;
+  estado.turnoBloqueado = false;
+  limpiarAnimaciones();
+  mostrarPantalla("mapa");
+  pintarMapa();
+  $("#mapa-mensaje").textContent = mensaje;
+}
+
+function entrarMapa() {
+  if (!estado.activo || !estado.equipo[estado.activo]) {
+    estado.activo = Object.keys(estado.equipo)[0];
+  }
+  if (!estado.activo) return;
+  curarEquipo();
+  generarWilds();
+  mostrarPantalla("mapa");
+  pintarMapa();
+  $("#mapa-mensaje").textContent = pokedexCompleta()
+    ? "🏆 ¡POKÉDEX COMPLETA! Los 8 pokememes son tuyos (sigue peleando por PX si quieres)."
+    : `En el mapa hay ${estado.wilds.length} pokememes sueltos. ¡A cazarlos!`;
+}
+
 $("#btn-jugar").addEventListener("click", () => {
-  pintarSelección();
+  pintarSelección("cadena");
   mostrarPantalla("elegir");
 });
+$("#btn-mapa").addEventListener("click", () => {
+  if (Object.keys(estado.equipo).length === 0) {
+    pintarSelección("mapa");
+    mostrarPantalla("elegir");
+  } else {
+    entrarMapa();
+  }
+});
+$("#btn-mapa-titulo").addEventListener("click", () => mostrarPantalla("titulo"));
 $("#btn-revancha").addEventListener("click", () => iniciarBatalla(estado.jugador.id));
 $("#btn-cambiar").addEventListener("click", () => {
-  pintarSelección();
+  pintarSelección("cadena");
   mostrarPantalla("elegir");
+});
+
+const DIRECCIONES = { arriba: [0, -1], abajo: [0, 1], izquierda: [-1, 0], derecha: [1, 0] };
+document.querySelectorAll(".dpad-btn").forEach((b) => {
+  b.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    const d = DIRECCIONES[b.dataset.dir];
+    if (d) mover(d[0], d[1]);
+  });
+});
+document.addEventListener("keydown", (e) => {
+  if (!$("#pantalla-mapa").classList.contains("activa")) return;
+  const k = e.key.length === 1 ? e.key.toLowerCase() : e.key.toLowerCase();
+  const dir = { arrowup: "arriba", w: "arriba", arrowdown: "abajo", s: "abajo", arrowleft: "izquierda", a: "izquierda", arrowright: "derecha", d: "derecha" }[k];
+  if (!dir) return;
+  if (e.key.toLowerCase().startsWith("arrow")) e.preventDefault();
+  const d = DIRECCIONES[dir];
+  mover(d[0], d[1]);
 });
 
 document.addEventListener("DOMContentLoaded", pintarSelecciónMini);

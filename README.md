@@ -50,10 +50,28 @@ Ataque superficaz = daño ×2. Ataque chafa = daño ×0.5.
 
 Extras: golpes críticos, envenenamiento por óxido, curaciones, chips de estado, log de batalla con comentarios y números de daño flotantes.
 
+## Mapa experimental 🗺️ y sistema de niveles
+
+Pulsa **🗺️ EXPLORAR EL MAPA** en el título para jugar el modo de exploración:
+
+1. Elige tu monstruo inicial (Nv. 5) y aparecerás en un mapa de 12×7 casillas.
+2. Muévete con el **D-pad táctil** (en móvil) o con **WASD / flechas** del teclado.
+3. Los otros 7 pokememes deambulan por el mapa como silvestres (Nv. 2–5). Pisa su casilla para iniciar la batalla.
+4. En las batallas silvestres aparece el botón **⚽ CAPTURAR**: lanza el Zapato Poké con estas probabilidades según el HP del rival:
+   - HP del rival alto (verde): **15%**
+   - HP medio (amarillo): **45%**
+   - HP bajo (rojo): **75%**
+5. Si ganas (sin capturar) recibes **XP** y tu monstruo **sube de nivel**, aumentando sus estadísticas: **+8 HP, +2 ATK, +2 DEF, +1 VEL por nivel**.
+6. El equipo se cura al volver al mapa, y puedes tocar a cualquier miembro del equipo para hacerlo el activo.
+7. Cuando capturas/derrotas a los 8: 🏆 **¡POKÉDEX COMPLETA!**
+
+Subir de nivel importa: un Pigeon Nv. 5 tiene 147 HP; a Nv. 14 ya llega con 219 HP y mucho más ataque.
+
 ## Estructura
 
 ```
-index.html    Pantallas (título, selección, batalla, resultado)
-styles.css    Estilo retro Game-Boy con HUD de batalla
-game.js       Sprites SVG, datos de monstruos, tabla de tipos y motor de combate
+index.html    Pantallas (título, selección, batalla, mapa, resultado)
+styles.css    Estilo retro Game-Boy con HUD de batalla y mapa
+game.js       Sprites SVG, datos de monstruos, tabla de tipos, motor de combate y motor de mapa
+juego.html    Todo en un solo archivo (HTML + CSS + JS inline) para compartir fácil
 ```
