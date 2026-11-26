@@ -74,7 +74,17 @@
       <h2>🗺️ Mapa experimental</h2>
       <div id="mapa-mensaje" class="mapa-mensaje"></div>
       <div id="equipo" class="equipo"></div>
+      <div id="mochila" class="mochila"></div>
       <div id="mapa" class="mapa"></div>
+      <div id="tienda" class="tienda">
+        <h3>🏪 TIENDA POKEMEME</h3>
+        <div class="tienda-items">
+          <button data-comprar="pocion">🧪 Poción<br><small>cura 45 PS · 30 💰</small></button>
+          <button data-comprar="zapato">👟 Zapato Dorado<br><small>+20% captura · 50 💰</small></button>
+          <button data-comprar="caramelo">🍬 Caramelo Raro<br><small>+40 PX · 80 💰</small></button>
+        </div>
+        <button id="btn-cerrar-tienda" class="btn-grande secundario">Salir de la tienda</button>
+      </div>
       <div class="zona-controles">
         <div class="dpad">
           <button class="dpad-btn dpad-arriba" data-dir="arriba">▲</button>
@@ -84,7 +94,7 @@
         </div>
         <button id="btn-mapa-titulo" class="btn-grande secundario">🏠 Título</button>
       </div>
-      <p class="nota">Muévete con WASD / flechas o el pad táctil. Pisa a un bicho para pelearlo; si le bajas vida, lánzale el Zapato Poké ⚽ para capturarlo.</p>
+      <p class="nota">Muévete con WASD / flechas o el pad táctil. Pueblo arriba-izquierda: tienda 🏪, centro 🏥 y NPCs (chócalos). Las ZONAS OSCURAS del este esconden pokememes; bájarles la vida y lánzales el Zapato Poké ⚽ para capturarlos.</p>
     </section>
 
     <section id="pantalla-final" class="pantalla">

@@ -23,6 +23,7 @@ Superficaz ×2 en verde, poco eficaz ×0.5 en gris, **IMMUNE ×0** en rojo:
 | Ataque ▼ / Defensa ▶ | Normal | Agua | Planta | Volador | Veneno | Lucha | Fantasma | Metal |
 |---|---|---|---|---|---|---|---|---|
 | **Normal** | | | | | | | **×0** | ×0.5 |
+| **Fuego** | | | ×2 | | | | | ×0.5 |
 | **Agua** | | ×0.5 | ×0.5 | | | | | ×0.5 |
 | **Planta** | | ×2 | ×0.5 | ×0.5 | ×0.5 | | | ×0.5 |
 | **Volador** | | | ×2 | | | ×2 | | ×0.5 |
@@ -54,16 +55,24 @@ Extras: golpes críticos, envenenamiento por óxido, curaciones, chips de estado
 
 Pulsa **🗺️ EXPLORAR EL MAPA** en el título para jugar el modo de exploración:
 
-1. Elige tu monstruo inicial (Nv. 5) y aparecerás en un mapa de 12×7 casillas. Tu personaje es un entrenador 2D que lleva en la **cabeza al pokememe activo** (cámbialo tocando a un miembro del equipo).
-2. Muévete con el **D-pad táctil** (en móvil) o con **WASD / flechas** del teclado.
-3. Los otros 7 pokememes se esconden en **ZONAS OSCURAS** 🌑: grupos de casillas más oscuras y pegadas entre sí. Sabes **DÓNDE** hay un pokememe, pero **NO CUÁL** te saltará hasta que pisas la zona (Nv. 2–5).
-4. En las batallas silvestres aparece el botón **⚽ CAPTURAR**: lanza el Zapato Poké con estas probabilidades según el HP del rival:
+1. Elige tu monstruo inicial (Nv. 5) y aparecerás en un mapa de 20×10 casillas. Tu personaje es un entrenador 2D que lleva en la **cabeza al pokememe activo** (cámbialo tocando a un miembro del equipo).
+2. Al oeste está **PUEBLO BIGATO**, de 10×9 casillas (el tamaño exacto de la pantalla de los primeros Pokémon de Game Boy):
+   - 🏪 **TIENDA**: compra con monedas 💰 (🧪 Poción 30, 👟 Zapato Dorado 50, 🍬 Caramelo Raro 80).
+   - 🏥 **Centro Pokememe** (casa roja): cura a tu equipo gratis.
+   - 🏠 **Casa de Doña Yema**: consejos de abuela.
+   - **4 NPCs** (Profe Ratón, Niño Turbo, Abuela Katia, Corredor Novato): chócalos para que te expliquen cómo funciona todo.
+3. Muévete con el **D-pad táctil** (en móvil) o con **WASD / flechas** del teclado.
+4. Los otros 7 pokememes se esconden en **ZONAS OSCURAS** 🌑 al este: grupos de casillas más oscuras y pegadas entre sí. Sabes **DÓNDE** hay un pokememe, pero **NO CUÁL** te saltará hasta que pisas la zona (Nv. 2–5).
+5. **Objetos sueltos** 🧪👟🍬 brillan por las rutas: písalos para guardarlos en la mochila (úsala desde la barra del mapa).
+6. Ganas **monedas** 💰 por derrotar (10 + nivel×4) o capturar (+15) pokememes.
+7. En las batallas silvestres aparece el botón **⚽ CAPTURAR**: lanza el Zapato Poké con estas probabilidades según el HP del rival:
    - HP del rival alto (verde): **15%**
    - HP medio (amarillo): **45%**
    - HP bajo (rojo): **75%**
-5. Si ganas (sin capturar) recibes **XP** y tu monstruo **sube de nivel**, aumentando sus estadísticas: **+8 HP, +2 ATK, +2 DEF, +1 VEL por nivel**.
-6. El equipo se cura al volver al mapa, y puedes tocar a cualquier miembro del equipo para hacerlo el activo.
-7. Cuando capturas/derrotas a los 8: 🏆 **¡POKÉDEX COMPLETA!**
+   - Con Zapato Dorado activado: **+20%** extra.
+8. Si ganas (sin capturar) recibes **XP** y tu monstruo **sube de nivel**, aumentando sus estadísticas: **+8 HP, +2 ATK, +2 DEF, +1 VEL por nivel**.
+9. Cuando capturas/derrotas a los 8: 🏆 **¡POKÉDEX COMPLETA!**
+10. El equipo también se cura al volver al mapa, y puedes tocar a cualquier miembro del equipo para hacerlo el activo.
 
 Subir de nivel importa: un Pigeon Nv. 5 tiene 147 HP; a Nv. 14 ya llega con 219 HP y mucho más ataque.
 

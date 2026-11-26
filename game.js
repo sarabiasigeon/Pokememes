@@ -348,7 +348,7 @@ const MONSTRUOS = {
     ataques: [
       { nombre: "Mordisco Tímido", potencia: 20, clase: "atk-normal", tipo: "normal", texto: "suelta un mordisquito que ni él se cree" },
       { nombre: "Cascarazo", potencia: 24, clase: "atk-normal", tipo: "normal", texto: "suelta un cabezazo de cáscara dura" },
-      { nombre: "Yema Ardiente", potencia: 22, clase: "atk-fuego", tipo: "normal", texto: "eyecta yema hirviendo a presión" },
+      { nombre: "Yema Ardiente", potencia: 22, clase: "atk-fuego", tipo: "fuego", texto: "eyecta yema hirviendo a presión" },
       { nombre: "MASCADA REGENERADORA", cura: 46, clase: "atk-secreto", tipo: "normal", texto: "se mete en la boca rival, se hace mascar contea y sale diputado y renovado", especial: true }
     ]
   },
@@ -375,6 +375,7 @@ const MONSTRUOS = {
 
 const TABLA_TIPOS = {
   normal: { metal: 0.5, fantasma: 0 },
+  fuego: { planta: 2, metal: 0.5, fuego: 0.5 },
   agua: { agua: 0.5, planta: 0.5 },
   planta: { agua: 2, planta: 0.5, veneno: 0.5, volador: 0.5, metal: 0.5 },
   volador: { planta: 2, lucha: 2, metal: 0.5 },
@@ -436,11 +437,47 @@ const estado = {
   zonaActiva: null,
   salvaje: false,
   posJugador: { x: 1, y: 3 },
-  modoSeleccion: "cadena"
+  modoSeleccion: "cadena",
+  monedas: 60,
+  bonusCaptura: 0,
+  mochila: { pocion: 1, zapato: 0, caramelo: 0 },
+  objetos: [],
+  npcLinea: {}
 };
 
-const MAPA_COLS = 12;
-const MAPA_FILAS = 7;
+const MAPA_COLS = 20;
+const MAPA_FILAS = 10;
+const PUEBLO = { x0: 0, y0: 0, w: 10, h: 9 };
+const EDIFICIOS = [
+  { tipo: "tienda", x: 2, y: 1, w: 3, h: 2, puerta: { x: 3, y: 2 } },
+  { tipo: "casa", x: 7, y: 1, w: 2, h: 2, puerta: { x: 8, y: 2 } },
+  { tipo: "centro", x: 2, y: 5, w: 2, h: 2, puerta: { x: 3, y: 6 } }
+];
+const NPCS = [
+  { x: 6, y: 4, cara: "🧝", nombre: "Profe Ratón", lineas: [
+    "¡Hola! Bienvenido a PUEBLO BIGATO.",
+    "En las ZONAS OSCURAS del este se esconden pokememes salvajes.",
+    "Verás DÓNDE están (casillas oscuras juntas), pero NO CUÁL te saltará. ¡Sorpresa!"
+  ]},
+  { x: 8, y: 6, cara: "👦", nombre: "Niño Turbo", lineas: [
+    "¡Yo ya capturé uno! Primero le bajas la vida.",
+    "Con HP en rojo, el Zapato Poké ⚽ atrapa 75% de las veces.",
+    "Y con un Zapato Dorado 👟 de la tienda, +20% extra."
+  ]},
+  { x: 5, y: 7, cara: "👵", nombre: "Abuela Katia", lineas: [
+    "Escúchame, niño: en la 🏪 TIENDA se compra con monedas 💰.",
+    "Ganas monedas derrotando o capturando pokememes.",
+    "La 🏥 CASA ROJA es el Centro Pokememe: entra y cura a tu equipo gratis."
+  ]},
+  { x: 3, y: 8, cara: "🏃", nombre: "Corredor Novato", lineas: [
+    "Cada victoria da PX y tus pokememes SUBEN DE NIVEL.",
+    "Por nivel: +8 HP, +2 ATK, +2 DEF, +1 VEL.",
+    "Toca a un miembro del equipo para que sea el activo: ¡tu personaje llevará su cabeza!"
+  ]}
+];
+const OBJETO_ICONO = { pocion: "🧪", caramelo: "🍬", zapato: "👟" };
+const OBJETO_NOMBRE = { pocion: "Poción", caramelo: "Caramelo Raro", zapato: "Zapato Dorado" };
+const PRECIOS = { pocion: 30, zapato: 50, caramelo: 80 };
 
 function mezclar(arr) {
   const a = [...arr];
@@ -790,7 +827,9 @@ async function ejecutarRonda(indiceJugador) {
 async function finalizarSalvaje(ganoJugador) {
   if (ganoJugador) {
     const xp = 15 + estado.rival.nivel * 5;
-    log(`¡${estado.jugador.nombre} gana ${xp} PX!`);
+    const monedas = 10 + estado.rival.nivel * 4;
+    estado.monedas += monedas;
+    log(`¡${estado.jugador.nombre} gana ${xp} PX y ${monedas} monedas 💰!`);
     ganarXP(estado.jugador, xp);
     await sleep(700);
     quitarZona();
@@ -813,12 +852,15 @@ async function intentarCaptura() {
   await sleep(700);
   const ratio = estado.rival.hp / estado.rival.hpMax;
   let p = ratio < 0.25 ? 0.75 : ratio < 0.5 ? 0.45 : 0.15;
-  if (estado.equipo[estado.rival.id]) p = Math.min(0.95, p * 1.4);
+  if (estado.equipo[estado.rival.id]) p *= 1.4;
+  p = Math.min(0.95, p + estado.bonusCaptura);
+  estado.bonusCaptura = 0;
   if (Math.random() < p) {
     log(`¡1… 2… 3… CAPTURADO! ¡${estado.rival.nombre} es tuyo!`, "destacado");
     vibrar([60, 50, 60, 50, 180]);
     estado.rival.hp = estado.rival.hpMax;
     estado.equipo[estado.rival.id] = estado.rival;
+    estado.monedas += 15;
     await sleep(800);
     quitarZona();
     salirAlMapa(pokedexCompleta()
@@ -940,7 +982,7 @@ function generarZonas() {
     const tam = 2 + Math.floor(Math.random() * 3);
     let celdas = null;
     for (let intento = 0; intento < 300 && !celdas; intento++) {
-      const ax = Math.floor(Math.random() * MAPA_COLS);
+      const ax = PUEBLO.w + Math.floor(Math.random() * (MAPA_COLS - PUEBLO.w));
       const ay = Math.floor(Math.random() * MAPA_FILAS);
       if (ocupadas.has(ax + "," + ay)) continue;
       const grupo = [{ x: ax, y: ay }];
@@ -951,16 +993,83 @@ function generarZonas() {
         const dir = Object.values(DIRECCIONES)[Math.floor(Math.random() * 4)];
         const nx = base.x + dir[0];
         const ny = base.y + dir[1];
-        if (nx < 0 || ny < 0 || nx >= MAPA_COLS || ny >= MAPA_FILAS) continue;
+        if (nx < PUEBLO.w || ny < 0 || nx >= MAPA_COLS || ny >= MAPA_FILAS) continue;
         if (ocupadas.has(nx + "," + ny) || grupo.some((c) => c.x === nx && c.y === ny)) continue;
         grupo.push({ x: nx, y: ny });
       }
       if (grupo.length >= 2) celdas = grupo;
     }
-    if (!celdas) celdas = [{ x: Math.floor(Math.random() * MAPA_COLS), y: Math.floor(Math.random() * MAPA_FILAS) }];
+    if (!celdas) celdas = [{ x: PUEBLO.w + Math.floor(Math.random() * (MAPA_COLS - PUEBLO.w)), y: Math.floor(Math.random() * MAPA_FILAS) }];
     celdas.forEach((c) => ocupadas.add(c.x + "," + c.y));
     return { id, nivel: 2 + Math.floor(Math.random() * 4), celdas };
   });
+}
+
+function generarObjetos() {
+  const tipos = ["pocion", "pocion", "caramelo", "zapato"];
+  estado.objetos = tipos.map((tipo) => {
+    for (let i = 0; i < 200; i++) {
+      const x = PUEBLO.w + Math.floor(Math.random() * (MAPA_COLS - PUEBLO.w));
+      const y = Math.floor(Math.random() * MAPA_FILAS);
+      if (estado.posJugador.x === x && estado.posJugador.y === y) continue;
+      if (estado.zonas.some((z) => z.celdas.some((c) => c.x === x && c.y === y))) continue;
+      if (estado.objetos.some((o) => o.x === x && o.y === y)) continue;
+      return { x, y, tipo };
+    }
+    return null;
+  }).filter(Boolean);
+}
+
+function pintarMochila() {
+  const cont = $("#mochila");
+  if (!cont) return;
+  cont.innerHTML = "";
+  const mon = document.createElement("span");
+  mon.className = "monedas";
+  mon.textContent = `💰 ${estado.monedas}`;
+  cont.appendChild(mon);
+  [["pocion", "🧪 Poción (45 PS)"], ["zapato", "👟 Zapato Dorado (+20%)"], ["caramelo", "🍬 Caramelo (+40 PX)"]].forEach(([tipo, etiqueta]) => {
+    const b = document.createElement("button");
+    b.className = "btn-mochila";
+    b.textContent = `${etiqueta} ×${estado.mochila[tipo]}`;
+    b.addEventListener("click", () => usarObjeto(tipo));
+    cont.appendChild(b);
+  });
+}
+
+function usarObjeto(tipo) {
+  if (!estado.mochila[tipo]) return;
+  const m = estado.equipo[estado.activo];
+  if (!m) return;
+  if (tipo === "pocion") {
+    if (m.hp >= m.hpMax) {
+      $("#mapa-mensaje").textContent = `${m.nombre} ya está llenito de vida.`;
+      return;
+    }
+    estado.mochila.pocion--;
+    m.hp = Math.min(m.hpMax, m.hp + 45);
+    $("#mapa-mensaje").textContent = `🧪 ${m.nombre} recuperó 45 PS.`;
+  } else if (tipo === "zapato") {
+    estado.mochila.zapato--;
+    estado.bonusCaptura = 0.2;
+    $("#mapa-mensaje").textContent = "👟 Zapato Dorado activado: tu próxima captura tendrá +20% de probabilidad.";
+  } else {
+    estado.mochila.caramelo--;
+    ganarXP(m, 40);
+    $("#mapa-mensaje").textContent = `🍬 ${m.nombre} se comió el caramelo (+40 PX).`;
+  }
+  vibrar(20);
+  pintarEquipo();
+  pintarMochila();
+}
+
+function abrirTienda() {
+  $("#tienda").classList.add("abierta");
+  $("#mapa-mensaje").textContent = "🏪 ¡Bienvenido a la TIENDA! Compra con tus monedas 💰.";
+}
+
+function cerrarTienda() {
+  $("#tienda").classList.remove("abierta");
 }
 
 function quitarZona() {
@@ -1000,12 +1109,33 @@ function pintarEquipo() {
 
 function pintarMapa() {
   pintarEquipo();
+  pintarMochila();
   const cont = $("#mapa");
   cont.innerHTML = "";
   for (let y = 0; y < MAPA_FILAS; y++) {
     for (let x = 0; x < MAPA_COLS; x++) {
       const c = document.createElement("div");
       c.className = "casilla";
+      const ed = EDIFICIOS.find((e) => x >= e.x && x < e.x + e.w && y >= e.y && y < e.y + e.h);
+      if (ed) {
+        c.classList.add("edificio", "edificio-" + ed.tipo);
+        if (ed.puerta.x === x && ed.puerta.y === y) {
+          c.classList.add("puerta");
+          c.textContent = ed.tipo === "tienda" ? "🏪" : ed.tipo === "centro" ? "🏥" : "🏠";
+        }
+      } else if (x < PUEBLO.w && y < PUEBLO.h) {
+        c.classList.add("pueblo");
+      }
+      const npc = NPCS.find((n) => n.x === x && n.y === y);
+      if (npc) {
+        c.classList.add("npc");
+        c.textContent = npc.cara;
+      }
+      const obj = estado.objetos.find((o) => o.x === x && o.y === y);
+      if (obj) {
+        c.classList.add("objeto");
+        c.textContent = OBJETO_ICONO[obj.tipo];
+      }
       if (estado.zonas.some((z) => z.celdas.some((celda) => celda.x === x && celda.y === y))) c.classList.add("oscura");
       if (estado.posJugador.x === x && estado.posJugador.y === y) {
         c.classList.add("jugador");
@@ -1018,13 +1148,49 @@ function pintarMapa() {
 
 function mover(dx, dy) {
   if (!$("#pantalla-mapa").classList.contains("activa") || estado.salvaje) return;
+  cerrarTienda();
   const nx = Math.min(MAPA_COLS - 1, Math.max(0, estado.posJugador.x + dx));
   const ny = Math.min(MAPA_FILAS - 1, Math.max(0, estado.posJugador.y + dy));
   if (nx === estado.posJugador.x && ny === estado.posJugador.y) return;
+  const npc = NPCS.find((n) => n.x === nx && n.y === ny);
+  if (npc) {
+    const i = (estado.npcLinea[npc.nombre] || 0) % npc.lineas.length;
+    estado.npcLinea[npc.nombre] = (estado.npcLinea[npc.nombre] || 0) + 1;
+    $("#mapa-mensaje").textContent = `${npc.cara} ${npc.nombre}: "${npc.lineas[i]}"`;
+    vibrar(15);
+    return;
+  }
+  const ed = EDIFICIOS.find((e) => nx >= e.x && nx < e.x + e.w && ny >= e.y && ny < e.y + e.h);
+  if (ed && !(ed.puerta.x === nx && ed.puerta.y === ny)) {
+    $("#mapa-mensaje").textContent = "🚪 Eso es una pared, tío. Usa la puerta.";
+    return;
+  }
   estado.posJugador = { x: nx, y: ny };
+  const obj = estado.objetos.find((o) => o.x === nx && o.y === ny);
+  if (obj) {
+    estado.objetos = estado.objetos.filter((o) => o !== obj);
+    estado.mochila[obj.tipo]++;
+    $("#mapa-mensaje").textContent = `✨ ¡Encontraste un ${OBJETO_NOMBRE[obj.tipo]} ${OBJETO_ICONO[obj.tipo]}! Va a la mochila.`;
+    vibrar([30, 40, 30]);
+    pintarMapa();
+    return;
+  }
   const zona = estado.zonas.find((z) => z.celdas.some((c) => c.x === nx && c.y === ny));
   if (zona) {
     encontrarSalvaje(zona);
+    return;
+  }
+  const puerta = EDIFICIOS.find((e) => e.puerta.x === nx && e.puerta.y === ny);
+  if (puerta) {
+    pintarMapa();
+    if (puerta.tipo === "tienda") abrirTienda();
+    else if (puerta.tipo === "centro") {
+      curarEquipo();
+      pintarMochila();
+      $("#mapa-mensaje").textContent = "🏥 ¡Centro Pokememe! Tu equipo está curadito gratis. ¡Vuelve cuando quieras!";
+    } else {
+      $("#mapa-mensaje").textContent = "🏠 Casa de Doña Yema: \"Sube de nivel antes de meterte a las zonas oscuras.\"";
+    }
     return;
   }
   pintarMapa();
@@ -1066,11 +1232,13 @@ function entrarMapa() {
   if (!estado.activo) return;
   curarEquipo();
   generarZonas();
+  generarObjetos();
   mostrarPantalla("mapa");
+  cerrarTienda();
   pintarMapa();
   $("#mapa-mensaje").textContent = pokedexCompleta()
     ? "🏆 ¡POKÉDEX COMPLETA! Los 8 pokememes son tuyos (sigue peleando por PX si quieres)."
-    : `En el mapa hay ${estado.zonas.length} ZONAS OSCURAS 🌑. ¡Sabes DÓNDE hay pokememe, pero no CUÁL te saldrá!`;
+    : `🏛️ PUEBLO BIGATO (arriba-izquierda): tienda 🏪, centro 🏥 y NPCs. Al este hay ${estado.zonas.length} ZONAS OSCURAS 🌑 y objetos sueltos. ¡A explorar!`;
 }
 
 $("#btn-jugar").addEventListener("click", () => {
@@ -1110,6 +1278,21 @@ document.addEventListener("keydown", (e) => {
   mover(d[0], d[1]);
 });
 
+document.querySelectorAll("[data-comprar]").forEach((b) => {
+  b.addEventListener("click", () => {
+    const tipo = b.dataset.comprar;
+    if (estado.monedas < PRECIOS[tipo]) {
+      $("#mapa-mensaje").textContent = "❌ No te alcanza. ¡Gana monedas peleando en las zonas oscuras!";
+      return;
+    }
+    estado.monedas -= PRECIOS[tipo];
+    estado.mochila[tipo]++;
+    vibrar(25);
+    pintarMochila();
+    $("#mapa-mensaje").textContent = `🛍️ ¡Compraste ${OBJETO_NOMBRE[tipo]}! Te quedan 💰 ${estado.monedas}`;
+  });
+});
+$("#btn-cerrar-tienda").addEventListener("click", cerrarTienda);
 document.addEventListener("DOMContentLoaded", pintarSelecciónMini);
 pintarSelecciónMini();
 activarTactil();
